@@ -900,6 +900,23 @@ document.querySelectorAll(".auto-text-button").forEach((button) => {
 
 document.querySelector("#copyAutoTextButton").addEventListener("click", () => copyText(document.querySelector("#autoTextArea").value));
 
+function shiftKmWeek(offset) {
+  const start = new Date(`${periodSettings.weekStart}T12:00:00`);
+  start.setDate(start.getDate() + offset * 7);
+  periodSettings.weekStart = `${start.getFullYear()}-${String(start.getMonth()+1).padStart(2,"0")}-${String(start.getDate()).padStart(2,"0")}`;
+  savePeriod();
+  renderKmTable();
+}
+document.querySelector("#kmPrevWeek").addEventListener("click", () => shiftKmWeek(-1));
+document.querySelector("#kmNextWeek").addEventListener("click", () => shiftKmWeek(1));
+document.querySelector("#kmThisWeek").addEventListener("click", () => {
+  const today = new Date();
+  today.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+  periodSettings.weekStart = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
+  savePeriod();
+  renderKmTable();
+});
+
 document.querySelector("#kmTableBody").addEventListener("input", (event) => {
   const input = event.target.closest(".km-input");
   if (!input || !currentProfile || !["admin", "editor"].includes(currentProfile.role)) return;
