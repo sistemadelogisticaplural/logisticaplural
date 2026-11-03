@@ -149,25 +149,40 @@
     </section>
   </main>
 
-  <main class="main screen" id="maintenanceScreen" hidden>
-    <header class="topbar"><div><p class="eyebrow">GESTÃO DA FROTA</p><h1>Manutenções</h1></div><button class="topbar-logout-button" data-logout-button type="button" title="Sair da conta"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5v16h5M14 8l4 4-4 4M8 12h10"/></svg><span>Sair</span></button></header>
+  <main class="main screen maintenance-screen" id="maintenanceScreen" hidden>
+    <header class="topbar maintenance-topbar">
+      <div><p class="eyebrow">GESTÃO INTELIGENTE DA FROTA</p><h1>Central de manutenções</h1><p class="maintenance-top-description">Acompanhe a saúde dos veículos, organize os serviços e antecipe as próximas revisões.</p></div>
+      <button class="topbar-logout-button" data-logout-button type="button" title="Sair da conta"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5v16h5M14 8l4 4-4 4M8 12h10"/></svg><span>Sair</span></button>
+    </header>
     <section class="maintenance-content">
-      <div class="content-head"><div><p class="section-kicker">CONTROLE PREVENTIVO</p><h2>Frota de veículos</h2><p class="maintenance-subtitle">Selecione um veículo para consultar o histórico e os próximos serviços.</p></div><button type="button" class="primary-button" id="openMaintenanceForm">+ Registrar manutenção</button></div>
-      <div class="maintenance-layout"><div class="maintenance-vehicle-grid" id="maintenanceVehicleGrid"></div>
-        <section class="maintenance-history settings-panel" id="maintenanceHistory"><div class="panel-head"><div><p class="section-kicker">HISTÓRICO</p><h2 id="maintenanceVehicleTitle">Selecione um veículo</h2></div></div><div id="maintenanceHistoryContent" class="maintenance-history-content"><p>Escolha um veículo para visualizar as manutenções realizadas e os alertas de quilometragem.</p></div></section>
+      <section class="maintenance-hero">
+        <div class="maintenance-hero-copy"><span class="maintenance-hero-tag"><i></i> CONTROLE PREVENTIVO</span><h2>Frota em dia,<br><em>operação sem surpresas.</em></h2><p>Tenha o histórico de cada veículo em um só lugar e saiba o que precisa de atenção antes de virar um problema.</p><button type="button" class="maintenance-hero-button" id="openMaintenanceForm"><span>＋</span> Registrar manutenção</button></div>
+        <div class="maintenance-hero-art" aria-hidden="true"><div class="maintenance-orbit orbit-one"></div><div class="maintenance-orbit orbit-two"></div><div class="maintenance-hero-car">✧</div><div class="maintenance-hero-chip chip-top">✓ Preventiva</div><div class="maintenance-hero-chip chip-bottom">⌁ Quilometragem</div></div>
+      </section>
+      <div class="maintenance-stat-grid">
+        <article class="maintenance-stat"><span class="maintenance-stat-icon">▣</span><div><small>VEÍCULOS CADASTRADOS</small><strong id="maintenanceVehicleCount">0</strong><em>na frota</em></div></article>
+        <article class="maintenance-stat"><span class="maintenance-stat-icon stat-green">✓</span><div><small>SERVIÇOS REGISTRADOS</small><strong id="maintenanceServiceCount">0</strong><em>no histórico</em></div></article>
+        <article class="maintenance-stat"><span class="maintenance-stat-icon stat-amber">◷</span><div><small>ATENÇÃO NECESSÁRIA</small><strong id="maintenanceAttentionCount">0</strong><em>itens próximos ou vencidos</em></div></article>
+        <article class="maintenance-stat"><span class="maintenance-stat-icon stat-blue">R$</span><div><small>INVESTIMENTO REGISTRADO</small><strong id="maintenanceTotalCost">R$ 0</strong><em>em manutenções</em></div></article>
       </div>
-      <section class="settings-panel maintenance-form-panel" id="maintenanceFormPanel" hidden><div class="panel-head"><div><p class="section-kicker">NOVA ENTRADA</p><h2>Registrar manutenção</h2></div><button type="button" class="icon-button" id="closeMaintenanceForm" aria-label="Fechar">×</button></div>
+      <div class="maintenance-section-heading"><div><p class="section-kicker">SUA FROTA</p><h2>Escolha um veículo</h2><p>Selecione um cartão para abrir o painel completo de manutenção.</p></div><span class="maintenance-live-pill"><i></i> Dados atualizados</span></div>
+      <div class="maintenance-layout">
+        <div class="maintenance-vehicle-grid" id="maintenanceVehicleGrid"></div>
+        <section class="maintenance-history settings-panel" id="maintenanceHistory"><div class="panel-head"><div><p class="section-kicker">VISÃO DO VEÍCULO</p><h2 id="maintenanceVehicleTitle">Selecione um veículo</h2></div><span class="maintenance-history-badge">PAINEL DE CONTROLE</span></div><div id="maintenanceHistoryContent" class="maintenance-history-content"><p>Escolha um veículo para visualizar as manutenções realizadas e os alertas de quilometragem.</p></div></section>
+      </div>
+      <section class="settings-panel maintenance-form-panel" id="maintenanceFormPanel" hidden><div class="panel-head"><div><p class="section-kicker">NOVA ENTRADA</p><h2>Registrar manutenção</h2><p>Preencha os dados do serviço realizado.</p></div><button type="button" class="icon-button" id="closeMaintenanceForm" aria-label="Fechar">×</button></div>
         <form id="maintenanceForm" class="maintenance-form">
-          <label>VEÍCULO:<select name="vehicle" id="maintenanceVehicle" required></select></label>
-          <label>MANUTENÇÃO:<select name="type" id="maintenanceType" required></select></label>
-          <label class="maintenance-wide">OBSERVAÇÃO:<textarea name="notes" rows="3" placeholder="Detalhes, peças utilizadas, recomendações..."></textarea></label>
-          <label>DIA:<input name="date" type="date" required></label>
-          <label>KM DA MANUTENÇÃO:<input name="km" type="number" min="0" step="1" required placeholder="Ex.: 45200"></label>
-          <label>VALOR DA MANUTENÇÃO:<input name="value" type="number" min="0" step="0.01" required placeholder="0,00"></label>
-          <label>OFICINA DA MANUTENÇÃO:<input name="workshop" required placeholder="Nome da oficina"></label>
-          <div class="maintenance-wide"><button type="submit" class="primary-button">Salvar manutenção</button><p id="maintenanceMessage" class="settings-message" hidden></p></div>
+          <label>VEÍCULO<select name="vehicle" id="maintenanceVehicle" required></select></label>
+          <label>TIPO DE SERVIÇO<select name="type" id="maintenanceType" required></select></label>
+          <label class="maintenance-wide">OBSERVAÇÕES<textarea name="notes" rows="3" placeholder="Detalhes, peças utilizadas, recomendações..."></textarea></label>
+          <label>DATA DO SERVIÇO<input name="date" type="date" required></label>
+          <label>QUILOMETRAGEM (KM)<input name="km" type="number" min="0" step="1" required placeholder="Ex.: 45.200"></label>
+          <label>VALOR TOTAL (R$)<input name="value" type="number" min="0" step="0.01" required placeholder="0,00"></label>
+          <label>OFICINA / PRESTADOR<input name="workshop" required placeholder="Nome da oficina"></label>
+          <div class="maintenance-wide maintenance-form-actions"><button type="submit" class="primary-button">Salvar manutenção <span>→</span></button><p id="maintenanceMessage" class="settings-message" hidden></p></div>
         </form>
       </section>
+      <p class="maintenance-disclaimer">Os intervalos de revisão são referências sugeridas. Consulte sempre o manual e as recomendações do fabricante de cada veículo.</p>
     </section>
   </main>
 
