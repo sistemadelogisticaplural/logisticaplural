@@ -276,8 +276,10 @@ function render() {
     const driverHelp = Number(trip.driverHelpCost || 0);
     const total = Number(trip.fuelCost || 0) + totalHelp + driverHelp;
     const storageIndex = trips[selectedDay].indexOf(trip);
-    return `<article class="trip-card trip-card-detailed ${trip.status === "pending_admin" ? "trip-pending-admin" : ""}">
-      <header class="trip-card-header"><div class="trip-card-title"><span class="trip-number">VIAGEM ${String(index + 1).padStart(2,"0")}</span>${trip.status === "pending_admin" ? '<span class="editor-admin-badge" title="Solicitação enviada por editor para revisão administrativa">EDITOR ADM · AGUARDANDO COMPLEMENTO</span>' : ""}<h3>${escapeHtml(trip.municipality || "Município não informado")}</h3><p>${escapeHtml(trip.requester || "Solicitante não informado")} · ${escapeHtml(trip.vehicle || "Veículo não informado")}</p></div><div class="trip-card-date"><span>DATA</span><strong>${escapeHtml(selectedDate)}</strong></div>${currentProfile?.role === "admin" ? `<button class="edit-trip-button" type="button" data-edit-index="${storageIndex}" title="Completar ou editar dados da viagem" aria-label="Editar viagem">✎ Completar dados</button>` : ""}<button class="delete-button" type="button" data-index="${storageIndex}" title="Excluir viagem" aria-label="Excluir viagem"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V3h8v3M6 6l1 15h10l1-15M10 10v7M14 10v7"/></svg></button></header>
+    const tripStatus = trip.status === "rejected" ? "rejected" : (trip.status === "approved" || !trip.status ? "approved" : "pending_admin");
+    const statusLabel = tripStatus === "approved" ? "✓ VIAGEM APROVADA" : tripStatus === "rejected" ? "✕ VIAGEM REPROVADA" : "◷ AGUARDANDO APROVAÇÃO";
+    return `<article class="trip-card trip-card-detailed trip-status-${tripStatus}">
+      <header class="trip-card-header"><div class="trip-card-title"><span class="trip-number">VIAGEM ${String(index + 1).padStart(2,"0")}</span><span class="trip-review-badge">${statusLabel}</span><h3>${escapeHtml(trip.municipality || "Município não informado")}</h3><p>${escapeHtml(trip.requester || "Solicitante não informado")} · ${escapeHtml(trip.vehicle || "Veículo não informado")}</p></div><div class="trip-card-date"><span>DATA</span><strong>${escapeHtml(selectedDate)}</strong></div>${currentProfile?.role === "admin" ? `<div class="trip-review-actions"><button class="trip-approve-button" type="button" data-review-status="approved" data-review-index="${storageIndex}">✓ Aprovar</button><button class="trip-reject-button" type="button" data-review-status="rejected" data-review-index="${storageIndex}">✕ Reprovar</button></div><button class="edit-trip-button" type="button" data-edit-index="${storageIndex}" title="Completar ou editar dados da viagem" aria-label="Editar viagem">✎ Completar dados</button>` : ""}<button class="delete-button" type="button" data-index="${storageIndex}" title="Excluir viagem" aria-label="Excluir viagem"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V3h8v3M6 6l1 15h10l1-15M10 10v7M14 10v7"/></svg></button></header>
       <div class="trip-detail-grid">
         <section class="trip-detail-block"><div class="trip-block-heading"><span class="trip-block-symbol">◷</span><div><span>01 · CRONOGRAMA</span><h4>Horários da viagem</h4></div></div><div class="trip-time-row"><div><small>SAÍDA</small><strong>${escapeHtml(trip.departureTime || "--:--")}</strong></div><span class="trip-time-line">→</span><div><small>RETORNO</small><strong>${escapeHtml(trip.returnTime || "--:--")}</strong></div></div></section>
         <section class="trip-detail-block"><div class="trip-block-heading"><span class="trip-block-symbol">♙</span><div><span>02 · RESPONSÁVEIS</span><h4>Operação e solicitante</h4></div></div><dl class="trip-facts"><div><dt>Motorista</dt><dd>${escapeHtml(trip.driver || "Não informado")}</dd></div><div><dt>Solicitante</dt><dd>${escapeHtml(trip.requester || "Não informado")}</dd></div><div><dt>Custeio / setor</dt><dd>${escapeHtml(trip.funding || "Não informado")}</dd></div></dl></section>
@@ -772,7 +774,7 @@ tripForm.addEventListener("submit", (event) => {
     status: isEditorSubmission ? "pending_admin" : (editingTripIndex !== null ? (trips[selectedDay][editingTripIndex]?.status || "approved") : "approved"),
     submittedBy: isEditorSubmission ? (currentProfile.display_name || currentProfile.login_code || "Editor") : (editingTripIndex !== null ? (trips[selectedDay][editingTripIndex]?.submittedBy || "") : "")
   };
-  if (editingTripIndex !== null && currentProfile.role === "admin") trips[selectedDay][editingTripIndex] = { ...trips[selectedDay][editingTripIndex], ...tripData, status: "approved" };
+  if (editingTripIndex !== null && currentProfile.role === "admin") trips[selectedDay][editingTripIndex] = { ...trips[selectedDay][editingTripIndex], ...tripData, status: trips[selectedDay][editingTripIndex]?.status || "approved" };
   else trips[selectedDay].push(tripData);
   editingTripIndex = null;
   editingTripDay = null;
@@ -1037,6 +1039,17 @@ tripList.addEventListener("click", (event) => {
     save();
     render();
     return;
+  }
+  const reviewButton = event.target.closest("[data-review-status]");
+  if (reviewButton && currentProfile?.role === "admin") {
+    const reviewIndex = Number(reviewButton.dataset.reviewIndex);
+    const trip = trips[selectedDay]?.[reviewIndex];
+    const nextStatus = reviewButton.dataset.reviewStatus;
+    if (!trip || !["approved", "rejected"].includes(nextStatus)) return;
+    if (nextStatus === "rejected" && !window.confirm("Confirmar a reprovação desta viagem? Os dados continuarão salvos e visíveis para a logística.")) return;
+    trip.status = nextStatus; trip.reviewedAt = new Date().toISOString();
+    trip.reviewedBy = currentProfile.display_name || currentProfile.login_code || "Administrador";
+    save(); render(); return;
   }
   const editButton = event.target.closest(".edit-trip-button");
   if (editButton && currentProfile?.role === "admin") { openModal(Number(editButton.dataset.editIndex)); return; }
