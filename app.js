@@ -127,7 +127,7 @@ let travelExpandedTripKey = null;
 function getCurrentWeekTripsForText() {
   return Object.entries(DAYS).flatMap(([day, dayName], dayIndex) => {
     if (autoTextDay !== "all" && day !== autoTextDay) return [];
-    return trips[day].filter((trip) => trip.weekStart === periodSettings.weekStart).map((trip) => ({ ...trip, day, dayName, dayIndex }));
+    return trips[day].filter((trip) => trip.weekStart === periodSettings.weekStart && trip.status !== "rejected").map((trip) => ({ ...trip, day, dayName, dayIndex }));
   });
 }
 
@@ -628,7 +628,7 @@ function generateSummary() {
 
   Object.entries(DAYS).forEach(([day, dayName], dayIndex) => {
     if (autoTextDay !== "all" && day !== autoTextDay) return;
-    const weekTrips = trips[day].filter((trip) => trip.weekStart === periodSettings.weekStart);
+    const weekTrips = trips[day].filter((trip) => trip.weekStart === periodSettings.weekStart && trip.status !== "rejected");
     if (!weekTrips.length) return;
     hasTrips = true;
     lines.push(`\n${dayName}:`);
