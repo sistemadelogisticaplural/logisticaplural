@@ -201,13 +201,17 @@ function generateFinancialText() {
       const cost = Number(person.cost || 0);
       if (cost > 0) totals[company] = (totals[company] || 0) + cost;
     });
+    const driverHelp = Number(trip.driverHelpCost || 0);
+    const driverCompany = trip.driverHelpType && trip.driverHelpType !== "Não informado" ? trip.driverHelpType : "Sem empresa";
+    if (driverHelp > 0) totals[driverCompany] = (totals[driverCompany] || 0) + driverHelp;
 
     lines.push(`🧾 Viagem ${String(index + 1).padStart(2, "0")}:`);
     lines.push(`- 🏙️ Município: ${(trip.municipality || "Não informado")}`);
     lines.push(`- 🧍‍♂️ Solicitante: ${trip.requester || "Não informado"}`);
     lines.push(`- 👨‍✈️ Motorista: ${trip.driver || "Não definido"}`);
     lines.push(`- 👥 Total de colaboradores: ${trip.collaborators.length}`);
-    lines.push("- 🏢 Valores por empresa:");
+    lines.push(`- 🚘 Ajuda de custo do motorista (${driverCompany}): ${formatTextMoney(driverHelp)}`);
+    lines.push("- 🏢 Valores totais por empresa (motorista + colaboradores):");
 
     const companyEntries = Object.entries(totals);
     if (companyEntries.length) {
