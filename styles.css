@@ -289,7 +289,7 @@ h2 { font-size: 21px; }
 
 .editor-modal-note{margin:0 34px;padding:13px 15px;border:1px solid #a6e3d4;border-radius:12px;background:#edfbf6;color:#12665b}.editor-modal-note strong,.editor-modal-note span{display:block}.editor-modal-note strong{font-size:11px;letter-spacing:.04em}.editor-modal-note span{margin-top:5px;font-size:11px;line-height:1.5;color:#547b76}@media(max-width:680px){.editor-modal-note{margin:0 14px}}
 
-/* cache-bust 2026103014 */
+/* cache-bust 2026110301 */
 
 /* Solicitação de viagem simplificada: esconder por completo os campos que a administração completará */
 .trip-modal.editor-request-mode .trip-form-section:has(#collaboratorRows){display:none!important}
@@ -526,3 +526,20 @@ body.sidebar-collapsed .main{width:calc(100% - 78px);margin-left:78px}
 
 /* Evita mostrar a tela de login por um instante enquanto a sessão salva é validada. */
 .auth-checking .login-overlay { visibility: hidden !important; }
+
+/* Configurações organizadas em abas */
+.settings-tabs{display:flex;flex-wrap:wrap;gap:8px;padding:8px;margin:22px 0 18px;border:1px solid var(--line);border-radius:12px;background:#f7faf9}
+.settings-tab{display:flex;align-items:center;gap:9px;min-height:44px;padding:0 16px;border:1px solid transparent;border-radius:8px;background:transparent;color:var(--muted);font-size:11px;font-weight:800;letter-spacing:.7px;cursor:pointer;transition:.18s}
+.settings-tab span{display:grid;place-items:center;width:23px;height:23px;border-radius:7px;background:#e8efed;color:var(--green-dark);font-size:10px}
+.settings-tab:hover{background:#edf4f2;color:var(--green-dark)}
+.settings-tab.active{border-color:#d7e8e2;background:white;color:var(--green-dark);box-shadow:0 3px 12px rgba(20,55,45,.06)}
+.settings-tab.active span{background:var(--green);color:white}
+.settings-tab-content{max-width:900px}
+.settings-tab-panel[hidden]{display:none!important}
+.settings-tab-panel>.settings-panel{max-width:760px}
+.settings-tab-panel .settings-panel{overflow:hidden}
+.settings-tab-panel .panel-head{padding:20px 20px 14px;border-bottom:1px solid var(--line)}
+.settings-tab-panel .panel-head h2{margin:0}
+#vehiclesPanel .driver-form{grid-template-columns:minmax(220px,1fr) auto;align-items:end}
+#vehiclesPanel .driver-form .primary-button{min-height:42px}
+@media(max-width:680px){.settings-tabs{display:grid;grid-template-columns:1fr 1fr}.settings-tab{justify-content:flex-start;padding:0 10px;font-size:10px}.settings-tab-content{width:100%}#vehiclesPanel .driver-form{grid-template-columns:1fr}}
