@@ -110,10 +110,28 @@
 
   <main class="main screen travel-panel-screen" id="travelPanelScreen" hidden>
     <header class="topbar">
-      <div><p class="eyebrow">PLANEJAMENTO OPERACIONAL</p><h1>Painél de Viagens</h1></div>
+      <div><p class="eyebrow">PLANEJAMENTO OPERACIONAL</p><h1>Painel de Viagens</h1></div>
       <button class="topbar-logout-button" data-logout-button type="button" title="Sair da conta"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5v16h5M14 8l4 4-4 4M8 12h10"/></svg><span>Sair</span></button>
     </header>
-    <section class="travel-panel">
+    <section class="travel-panel-content">
+      <section class="travel-hero">
+        <div class="travel-hero-copy">
+          <span class="travel-hero-tag"><i></i> PLANEJAMENTO INTELIGENTE</span>
+          <h2>Viagens organizadas,<br><em>operações em movimento.</em></h2>
+          <p>Visualize o calendário da frota, acompanhe os deslocamentos e consulte equipes e custos em um só lugar.</p>
+          <div class="travel-hero-actions">
+            <button type="button" id="travelHeroPdf" class="travel-hero-action">＋ <span>Gerar relatório mensal</span></button>
+            <span class="travel-hero-caption">CONTROLE MENSAL DA OPERAÇÃO</span>
+          </div>
+        </div>
+        <div class="travel-hero-art" aria-hidden="true">
+          <div class="travel-orbit travel-orbit-one"></div><div class="travel-orbit travel-orbit-two"></div>
+          <div class="travel-hero-symbol">↗</div>
+          <span class="travel-hero-float travel-float-top">✓ Frota planejada</span>
+          <span class="travel-hero-float travel-float-bottom">▦ Calendário mensal</span>
+        </div>
+      </section>
+      <section class="travel-panel">
       <div class="travel-calendar-area">
         <div class="travel-panel-heading"><div><p class="section-kicker">VISÃO MENSAL</p><h2 id="travelMonthTitle">Mês</h2><p>Selecione um dia para consultar viagens, equipe e custos.</p></div>
           <div class="travel-panel-toolbar"><button type="button" id="travelExportPdf" class="travel-export-pdf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11m-4-4 4 4 4-4M5 16v4h14v-4"/></svg><span>Gerar PDF</span></button><div class="travel-month-controls"><button type="button" id="travelPrevMonth" aria-label="Mês anterior">‹</button><button type="button" id="travelToday">Hoje</button><button type="button" id="travelNextMonth" aria-label="Próximo mês">›</button></div></div>
@@ -128,6 +146,7 @@
         <div class="travel-day-trips" id="travelDayTrips"></div>
         <p class="travel-panel-hint">Clique em uma viagem para ver colaboradores, motorista, veículo, horários e custos.</p>
       </aside>
+      </section>
     </section>
   </main>
 
@@ -394,7 +413,7 @@
   <script>
     // Evita cache de recursos e atualiza abas abertas quando uma nova versão é publicada.
     (() => {
-      const version = "2026110314";
+      const version = "2026110315";
       document.querySelectorAll('link[rel="stylesheet"][href^="styles.css"]').forEach(el => el.href = "styles.css?v=" + version);
       document.querySelectorAll('script[src^="supabase-config.js"], script[src^="app.js"]').forEach(el => {
         const base = el.src.includes("supabase-config.js") ? "supabase-config.js" : "app.js";

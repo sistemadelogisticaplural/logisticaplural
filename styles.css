@@ -738,3 +738,42 @@ body.sidebar-collapsed .main{width:calc(100% - 78px);margin-left:78px}
 .dashboard-vehicle-panel{padding:19px 21px}.dashboard-vehicle-panel .vehicle-chart-head{display:flex;align-items:center;gap:12px}.dashboard-vehicle-panel .vehicle-chart-head h2{margin:3px 0;color:#203b36;font:800 17px "Manrope",sans-serif}.dashboard-vehicle-panel .vehicle-chart-icon{display:grid;place-items:center;width:39px;height:39px;border-radius:12px;background:#eaf5f1;color:#168267}.dashboard-vehicle-panel .vehicle-chart-icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 @media(max-width:950px){.dashboard-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-hero-art{right:0;width:34%}.dashboard-hero{padding:27px}.dashboard-grid{grid-template-columns:1fr}}
 @media(max-width:650px){.dashboard-hero{min-height:0;padding:23px 20px}.dashboard-hero-art{opacity:.2;right:-12%;width:60%}.dashboard-hero h2{font-size:27px}.dashboard-filter-panel{align-items:stretch;flex-direction:column;padding:15px}.dashboard-range{display:grid;grid-template-columns:1fr 20px 1fr;align-items:end}.dashboard-range label{min-width:0}.dashboard-range input{width:100%;min-width:0;padding:0 5px}.dashboard-range-separator{text-align:center;padding-bottom:13px}.dashboard-cards{gap:8px}.dashboard-stat{min-height:83px;padding:10px;gap:8px;border-radius:12px}.dashboard-stat-icon{width:32px;height:32px;flex-basis:32px;border-radius:10px;font-size:15px}.dashboard-stat small{font-size:7px;letter-spacing:.2px}.dashboard-stat strong{font-size:17px}.dashboard-stat em{font-size:8px;white-space:normal}.dashboard-panel{padding:15px}.dashboard-chart-panel .panel-head h2,.dashboard-vehicle-panel .vehicle-chart-head h2{font-size:15px}}
+
+
+/* Painel de Viagens — identidade visual alinhada à Central de Manutenções */
+.travel-panel-screen { padding-bottom: 34px; }
+.travel-panel-content { display:grid; gap:22px; }
+.travel-hero {
+  position:relative; isolation:isolate; display:flex; align-items:center; justify-content:space-between;
+  min-height:270px; overflow:hidden; border-radius:24px; padding:34px 42px;
+  color:#fff; background:linear-gradient(112deg,#103a3f 0%,#105b58 55%,#168879 100%);
+  box-shadow:0 18px 42px rgba(13,74,68,.14);
+}
+.travel-hero::before,.travel-hero::after { content:""; position:absolute; z-index:-1; border:1px solid rgba(176,239,220,.13); border-radius:50%; pointer-events:none; }
+.travel-hero::before { width:440px;height:440px;right:7%;top:-275px; }
+.travel-hero::after { width:360px;height:360px;right:-20px;bottom:-285px; }
+.travel-hero-copy { position:relative; z-index:2; max-width:610px; }
+.travel-hero-tag { display:inline-flex; align-items:center; gap:8px; padding:7px 12px; border:1px solid rgba(255,255,255,.22); border-radius:30px; color:#e1fff4; background:rgba(255,255,255,.08); font-size:10px; font-weight:900; letter-spacing:1px; }
+.travel-hero-tag i { width:8px;height:8px;border-radius:50%;background:#58e2b1;box-shadow:0 0 0 4px rgba(88,226,177,.13); }
+.travel-hero h2 { margin:19px 0 10px; color:#fff; font-size:clamp(27px,3vw,38px); line-height:1.08; letter-spacing:-1.2px; font-weight:900; }
+.travel-hero h2 em { color:#73e3c4; font-style:normal; }
+.travel-hero-copy>p { max-width:510px; margin:0; color:rgba(255,255,255,.82); font-size:13px; line-height:1.65; }
+.travel-hero-actions { display:flex; align-items:center; flex-wrap:wrap; gap:16px; margin-top:22px; }
+.travel-hero-action { display:inline-flex; align-items:center; gap:10px; min-height:42px; padding:0 17px; border:0; border-radius:11px; color:#075b54; background:#fff; font-size:12px; font-weight:900; cursor:pointer; transition:transform .18s,box-shadow .18s; }
+.travel-hero-action:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,0,0,.16); }
+.travel-hero-caption { color:rgba(224,255,244,.65); font-size:9px; font-weight:900; letter-spacing:1.2px; }
+.travel-hero-art { position:absolute; width:340px;height:250px;right:5%;top:50%;transform:translateY(-50%); }
+.travel-orbit { position:absolute; left:50%;top:50%;border:1px dashed rgba(188,255,228,.24);border-radius:50%;transform:translate(-50%,-50%) rotate(-18deg); }
+.travel-orbit-one { width:225px;height:185px; }
+.travel-orbit-two { width:300px;height:230px;transform:translate(-50%,-50%) rotate(35deg);border-style:solid;border-color:rgba(188,255,228,.16); }
+.travel-hero-symbol { position:absolute;left:50%;top:50%;display:grid;place-items:center;width:104px;height:104px;border:1px solid rgba(255,255,255,.28);border-radius:27px;color:#b8ffe2;background:rgba(197,255,230,.13);font-size:58px;font-weight:300;transform:translate(-50%,-50%) rotate(-9deg);box-shadow:0 15px 45px rgba(0,0,0,.12); }
+.travel-hero-float { position:absolute;padding:10px 13px;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#eafff7;background:rgba(4,55,53,.76);font-size:10px;font-weight:800;box-shadow:0 8px 18px rgba(0,0,0,.1); }
+.travel-float-top { top:28px;right:0; }
+.travel-float-bottom { bottom:24px;left:4px; }
+.travel-panel { grid-template-columns:minmax(0,1fr) 370px; gap:18px; }
+.travel-calendar-area,.travel-day-panel { border-radius:18px; box-shadow:0 12px 32px rgba(16,55,62,.06); }
+.travel-calendar-area { padding:24px; }
+.travel-day-panel { top:16px; }
+@media (max-width:1050px) { .travel-hero-art { right:1%;opacity:.72; } .travel-hero-copy { max-width:560px; } }
+@media (max-width:850px) { .travel-panel { grid-template-columns:minmax(0,1fr); } .travel-day-panel { position:static; } .travel-hero { padding:30px; } .travel-hero-art { right:-35px;opacity:.28; } }
+@media (max-width:560px) { .travel-hero { min-height:250px;padding:25px 21px;border-radius:18px; } .travel-hero h2 { font-size:28px; } .travel-hero-art { right:-135px;opacity:.18; } .travel-hero-caption { display:none; } .travel-calendar-area { padding:13px; } .travel-panel-heading { align-items:flex-start;flex-direction:column; } .travel-panel-toolbar { width:100%;justify-content:space-between; } .travel-day-cell { min-height:82px;padding:6px 4px; } .travel-mini-trip span { display:none; } }
