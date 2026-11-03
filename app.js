@@ -1113,7 +1113,7 @@ initializeSharedState();
 
 // Revalida o estado compartilhado periodicamente como proteção caso um dispositivo
 // perca uma notificação Realtime ou retorne de uma conexão instável.
-setInterval(refreshSharedState, 15000);
+setInterval(refreshSharedState, 150000);
 window.addEventListener("focus", refreshSharedState);
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden) refreshSharedState();
