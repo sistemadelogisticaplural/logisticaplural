@@ -1061,6 +1061,10 @@ function applyCurrentProfile() {
   if (editorTripsNav && currentProfile.role === "editor") editorTripsNav.querySelector("span").textContent = "Minhas viagens";
   // Editores acessam somente Minhas viagens; configurações são reservadas à administração.
   document.querySelector("#settingsNav").hidden = currentProfile.role !== "admin";
+  const maintenanceNav = document.querySelector("#maintenanceNav");
+  if (maintenanceNav) maintenanceNav.hidden = !canManage;
+  const maintenanceAddButton = document.querySelector("#openMaintenanceForm");
+  if (maintenanceAddButton) maintenanceAddButton.hidden = !canManage;
   document.querySelector("#newAccountPanel").hidden = !canManage;
   document.querySelector("#accountsPanel").hidden = !canManage;
   document.querySelector("#driversPanel").hidden = !canManage;
