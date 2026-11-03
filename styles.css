@@ -24,7 +24,8 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 .brand-mark svg, .nav-item svg { fill: currentColor; stroke: none; }
 .sidebar { position: fixed; inset: 0 auto 0 0; width: 238px; background: #fff; border-right: 1px solid var(--line); padding: 26px 18px 20px; display: flex; flex-direction: column; z-index: 5; }
 .brand { height: 44px; display: flex; align-items: center; gap: 10px; padding: 0 10px; color: var(--ink); text-decoration: none; font-family: "Manrope", sans-serif; font-size: 20px; font-weight: 800; }
-.brand-mark { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 0; color: inherit; background: transparent; }
+.brand-mark { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 8px; overflow: hidden; background: transparent; }
+.brand-mark img { width: 36px; height: 36px; display: block; object-fit: contain; border-radius: 8px; }
 .brand-mark img { width: 42px; height: 42px; display: block; object-fit: contain; }
 .brand-mark svg { width: 21px; height: 21px; }
 .nav { margin-top: 38px; display: grid; gap: 6px; }

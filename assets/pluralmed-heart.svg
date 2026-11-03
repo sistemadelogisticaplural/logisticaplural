@@ -1,13 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-<defs>
- <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0875ff"/><stop offset="1" stop-color="#0755e8"/></linearGradient>
- <linearGradient id="lime" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c4ff69"/><stop offset="1" stop-color="#8df044"/></linearGradient>
- <linearGradient id="cyan" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#00cbd0"/><stop offset="1" stop-color="#00b9b5"/></linearGradient>
- <clipPath id="heart"><path d="M128 235 25 132C-8 98 13 30 66 23c25-3 47 9 62 31 15-22 37-34 62-31 53 7 74 75 41 109Z"/></clipPath>
-</defs>
-<g clip-path="url(#heart)">
- <path fill="url(#blue)" d="M0 0H128L45 165 0 120Z"/>
- <path fill="url(#lime)" d="M128 0H256V120L211 165 128 80Z"/>
- <path fill="url(#cyan)" d="M45 165 128 80 211 165 128 256Z"/>
-</g>
+<svg xmlns="http://www.w3.org/2000/svg" width="1788" height="1788" viewBox="0 0 447 447">
+  <title>Logotipo de coração geométrico</title>
+  <rect width="447" height="447" fill="#20949A"/>
+  <path d="M223.5 148.2
+           L348.9 275.1
+           L223.5 402.2
+           L98.1 275.1 Z"
+        fill="#08BDBD"/>
+  <path d="M98.1 275.1
+           C85.0 263.0 68.8 247.7 56.1 234.1
+           C42.9 220.1 36.8 199.8 37.8 177.1
+           C39.7 128.7 75.2 93.8 118.2 90.1
+           C161.2 86.3 190.5 111.0 223.5 148.2 Z"
+        fill="#0868D8"/>
+  <path d="M223.5 148.2
+           C254.8 112.8 285.4 87.3 328.0 87.5
+           C372.1 87.7 407.4 124.0 410.7 169.1
+           C413.0 196.2 404.5 219.1 388.5 237.0
+           C376.2 250.8 361.8 264.5 348.9 275.1 Z"
+        fill="#C1E985"/>
 </svg>
