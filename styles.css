@@ -584,3 +584,89 @@ body.sidebar-collapsed .main{width:calc(100% - 78px);margin-left:78px}
 .maintenance-wide{grid-column:1/-1}
 @media(max-width:850px){.maintenance-layout{grid-template-columns:1fr}.maintenance-vehicle-grid{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}}
 @media(max-width:600px){.maintenance-form{grid-template-columns:1fr}.maintenance-wide{grid-column:auto}.maintenance-content .content-head{align-items:flex-start;gap:12px;flex-direction:column}}
+
+
+/* ===== Redesign premium: Central de Manutenções ===== */
+.maintenance-screen{max-width:1600px}
+.maintenance-topbar{align-items:flex-start}
+.maintenance-top-description{margin:7px 0 0;color:#71818b;font-size:13px}
+.maintenance-content{padding:22px 0 54px}
+.maintenance-hero{position:relative;isolation:isolate;overflow:hidden;min-height:260px;padding:34px 42px;border-radius:22px;background:linear-gradient(112deg,#102f37 0%,#145b5a 58%,#168477 100%);display:flex;align-items:center;justify-content:space-between;color:#fff;box-shadow:0 18px 42px rgba(14,75,70,.16)}
+.maintenance-hero:before,.maintenance-hero:after{content:"";position:absolute;z-index:-1;border:1px solid rgba(255,255,255,.09);border-radius:50%}
+.maintenance-hero:before{width:430px;height:430px;right:7%;top:-260px}
+.maintenance-hero:after{width:560px;height:560px;right:-5%;bottom:-460px}
+.maintenance-hero-copy{max-width:590px;z-index:1}
+.maintenance-hero-tag{display:inline-flex;align-items:center;gap:8px;padding:7px 11px;border:1px solid rgba(255,255,255,.2);border-radius:30px;background:rgba(255,255,255,.08);font-size:10px;font-weight:800;letter-spacing:1.2px;color:#c7f5e9}
+.maintenance-hero-tag i,.maintenance-live-pill i{width:7px;height:7px;border-radius:50%;background:#59e3b1;box-shadow:0 0 0 4px rgba(89,227,177,.13)}
+.maintenance-hero h2{margin:17px 0 9px;font:800 clamp(25px,3vw,36px)/1.12 "Manrope",sans-serif;letter-spacing:-1.2px}
+.maintenance-hero h2 em{font-style:normal;color:#7ce1c2}
+.maintenance-hero p{max-width:490px;margin:0;color:#c4d9d8;font-size:13px;line-height:1.7}
+.maintenance-hero-button{margin-top:22px;display:inline-flex;align-items:center;gap:9px;padding:12px 17px;border:0;border-radius:10px;background:#fff;color:#145b54;font-weight:800;font-size:12px;box-shadow:0 6px 18px rgba(0,0,0,.12);transition:.2s}
+.maintenance-hero-button:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(0,0,0,.2)}
+.maintenance-hero-button span{font-size:19px;line-height:12px}
+.maintenance-hero-art{position:relative;width:320px;height:220px;flex:0 0 320px;display:grid;place-items:center}
+.maintenance-orbit{position:absolute;border:1px solid rgba(167,244,222,.23);border-radius:50%;transform:rotate(-22deg)}
+.orbit-one{width:255px;height:145px}.orbit-two{width:205px;height:205px;border-style:dashed}
+.maintenance-hero-car{width:112px;height:112px;display:grid;place-items:center;border-radius:32px;background:linear-gradient(145deg,rgba(255,255,255,.22),rgba(255,255,255,.06));border:1px solid rgba(255,255,255,.25);font-size:58px;color:#b8f3df;box-shadow:0 20px 45px rgba(0,0,0,.16);transform:rotate(-10deg)}
+.maintenance-hero-chip{position:absolute;padding:9px 12px;border:1px solid rgba(255,255,255,.18);border-radius:9px;background:rgba(9,39,43,.55);backdrop-filter:blur(8px);font-size:10px;font-weight:700;color:#e0fff4}
+.chip-top{top:25px;right:12px}.chip-bottom{bottom:22px;left:4px}
+.maintenance-stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:18px 0 34px}
+.maintenance-stat{display:flex;align-items:center;gap:13px;min-height:104px;padding:18px;border:1px solid #e8eeec;border-radius:15px;background:#fff;box-shadow:0 5px 18px rgba(21,49,42,.035);transition:.2s}
+.maintenance-stat:hover{transform:translateY(-3px);box-shadow:0 12px 25px rgba(21,49,42,.07)}
+.maintenance-stat-icon{width:43px;height:43px;flex:0 0 43px;display:grid;place-items:center;border-radius:13px;background:#e9f4f0;color:#16785e;font-size:20px;font-weight:800}
+.maintenance-stat-icon.stat-green{background:#e8f7ee;color:#16834e}.maintenance-stat-icon.stat-amber{background:#fff4df;color:#c18018}.maintenance-stat-icon.stat-blue{background:#eaf2ff;color:#4778c7;font-size:13px}
+.maintenance-stat small,.maintenance-stat strong,.maintenance-stat em{display:block}
+.maintenance-stat small{color:#8a9699;font-size:9px;font-weight:800;letter-spacing:.65px}
+.maintenance-stat strong{margin:4px 0 1px;color:#1c3034;font:800 23px "Manrope",sans-serif}
+.maintenance-stat em{font-style:normal;color:#899598;font-size:10px}
+.maintenance-section-heading{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px}
+.maintenance-section-heading h2{margin:4px 0;font:800 21px "Manrope",sans-serif;color:#203337}
+.maintenance-section-heading p:not(.section-kicker){margin:0;color:#879397;font-size:12px}
+.maintenance-live-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 11px;border:1px solid #dceee5;border-radius:30px;background:#f2faf5;color:#438266;font-size:10px;font-weight:800}
+.maintenance-live-pill i{width:6px;height:6px}
+.maintenance-layout{display:grid;grid-template-columns:1fr;gap:16px}
+.maintenance-vehicle-grid{grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.maintenance-vehicle-card{position:relative;min-height:112px;grid-template-columns:46px 1fr;grid-template-rows:auto auto auto;align-content:center;gap:5px 12px;padding:18px;border:1px solid #e5ece9;border-radius:15px;background:linear-gradient(145deg,#fff,#fbfdfc);box-shadow:0 4px 14px rgba(20,60,48,.025);transition:transform .2s,border-color .2s,box-shadow .2s}
+.maintenance-vehicle-card:after{content:"›";position:absolute;right:15px;top:14px;color:#a8b7b1;font-size:21px;transition:.2s}
+.maintenance-vehicle-card:hover,.maintenance-vehicle-card.active{transform:translateY(-2px);border-color:#65b99b;box-shadow:0 10px 25px rgba(25,104,75,.1)}
+.maintenance-vehicle-card.active{background:linear-gradient(145deg,#f4fbf7,#fff);outline:2px solid rgba(51,151,111,.12)}
+.maintenance-vehicle-card.active:after{color:#16845f;content:"●";font-size:10px}
+.maintenance-card-icon{width:44px;height:44px;border-radius:13px;background:#e9f5ef;color:#16805e;font-size:21px}
+.maintenance-vehicle-card strong{padding-right:16px;font-size:13px}
+.maintenance-vehicle-card>span:not(.maintenance-card-icon){font-size:11px}
+.maintenance-vehicle-card small{font-size:10px;color:#56846f}
+.maintenance-history{border:1px solid #e7eeeb;border-radius:17px;box-shadow:0 7px 24px rgba(23,53,43,.04);overflow:hidden}
+.maintenance-history .panel-head{padding:20px 22px;margin:0;border-bottom:1px solid #edf1ef}
+.maintenance-history .panel-head h2{font:800 18px "Manrope",sans-serif}
+.maintenance-history-badge{padding:7px 10px;border-radius:7px;background:#edf6f1;color:#57856f;font-size:9px;font-weight:800;letter-spacing:.6px}
+.maintenance-history-content{padding:22px}
+.maintenance-current-km{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center;min-height:116px;margin:0 0 25px;padding:19px 23px;border:1px solid #d7ece1;border-radius:14px;background:linear-gradient(105deg,#eff9f3,#f7fbf8 65%,#eaf6f0)}
+.maintenance-current-km:after{content:"KM";position:absolute;right:24px;top:15px;color:rgba(23,126,86,.08);font:800 65px "Manrope",sans-serif}
+.maintenance-current-km span{font-size:9px;letter-spacing:1px;color:#628575}
+.maintenance-current-km strong{font:800 30px "Manrope",sans-serif;color:#167653}
+.maintenance-current-km small{font-size:10px;color:#84978e}
+.maintenance-history-content h3{margin:25px 0 12px;font:800 14px "Manrope",sans-serif;color:#273c3b}
+.maintenance-due-list{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.maintenance-due-row{position:relative;padding:15px;border:1px solid #e9efec;border-radius:12px;background:#fff;transition:.18s}
+.maintenance-due-row:hover{border-color:#c7dfd2;transform:translateY(-1px)}
+.maintenance-due-row span{font-size:11px;color:#52615e}
+.maintenance-due-row strong{font-size:13px}
+.maintenance-due-row small{font-size:10px;line-height:1.5}
+.maintenance-history-list{gap:9px}
+.maintenance-history-item{align-items:center;padding:15px 17px;border:1px solid #e9efec;border-radius:12px;background:#fff}
+.maintenance-history-item strong{font-size:12px;color:#283c3a}
+.maintenance-history-item span,.maintenance-history-item small{font-size:10px}
+.maintenance-form-panel{max-width:none;margin-top:18px;border:1px solid #e4ece8;border-radius:17px;box-shadow:0 12px 35px rgba(20,60,48,.08);overflow:hidden}
+.maintenance-form-panel .panel-head{padding:20px 22px;margin:0;border-bottom:1px solid #edf1ef}
+.maintenance-form-panel .panel-head h2{margin:4px 0;font:800 19px "Manrope",sans-serif}
+.maintenance-form-panel .panel-head p:not(.section-kicker){margin:0;color:#899693;font-size:11px}
+.maintenance-form{padding:22px;gap:16px;grid-template-columns:repeat(2,minmax(0,1fr))}
+.maintenance-form label{gap:8px;color:#64736e;font-size:9px;letter-spacing:.8px}
+.maintenance-form input,.maintenance-form select,.maintenance-form textarea{min-height:46px;padding:12px 13px;border:1px solid #e0e9e4;border-radius:10px;background:#fbfdfc;font-size:12px;transition:.18s}
+.maintenance-form input:focus,.maintenance-form select:focus,.maintenance-form textarea:focus{outline:none;border-color:#56a987;box-shadow:0 0 0 3px rgba(58,159,116,.1);background:#fff}
+.maintenance-form textarea{min-height:90px}
+.maintenance-form-actions{display:flex;align-items:center;gap:12px}
+.maintenance-form-actions .primary-button{min-height:45px;padding:0 20px;border-radius:10px}
+.maintenance-disclaimer{margin:15px 2px 0;color:#9aa5a0;font-size:10px;line-height:1.5}
+@media(max-width:950px){.maintenance-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.maintenance-hero-art{width:230px;flex-basis:230px}.maintenance-hero{padding:28px}}
+@media(max-width:620px){.maintenance-hero{min-height:0;padding:25px 21px}.maintenance-hero-art{display:none}.maintenance-hero h2{font-size:27px}.maintenance-stat-grid{gap:8px;margin-bottom:25px}.maintenance-stat{min-height:88px;padding:12px;gap:9px}.maintenance-stat-icon{width:35px;height:35px;flex-basis:35px;font-size:16px}.maintenance-stat small{font-size:8px}.maintenance-stat strong{font-size:19px}.maintenance-stat em{font-size:9px}.maintenance-section-heading{align-items:flex-start;gap:10px;flex-direction:column}.maintenance-vehicle-grid{grid-template-columns:1fr}.maintenance-history-content{padding:14px}.maintenance-form{grid-template-columns:1fr;padding:16px}.maintenance-wide{grid-column:auto}.maintenance-form-actions{align-items:flex-start;flex-direction:column}.maintenance-history-item{align-items:flex-start}.maintenance-history-badge{display:none}}
