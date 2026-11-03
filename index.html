@@ -129,23 +129,30 @@
     </section>
   </main>
 
-  <main class="main screen" id="kmScreen" hidden>
-    <header class="topbar">
-      <div>
-        <p class="eyebrow">CONTROLE OPERACIONAL</p>
-        <h1>Registro de KM</h1>
-      </div>
-    
+  <main class="main screen km-screen" id="kmScreen" hidden>
+    <header class="topbar km-topbar">
+      <div><p class="eyebrow">GESTÃO OPERACIONAL DA FROTA</p><h1>Registro de KM</h1><p class="km-top-description">Acompanhe a rodagem, confira os lançamentos e mantenha a quilometragem da frota sempre atualizada.</p></div>
       <button class="topbar-logout-button" data-logout-button type="button" title="Sair da conta"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5v16h5M14 8l4 4-4 4M8 12h10"/></svg><span>Sair</span></button>
     </header>
     <section class="km-content">
-      <div class="content-head km-head">
-        <div><p class="section-kicker">TODAS AS VIAGENS</p><h2>Quilometragem semanal</h2></div>
+      <section class="km-hero">
+        <div class="km-hero-copy"><span class="km-hero-tag"><i></i> CONTROLE DE QUILOMETRAGEM</span><h2>Cada quilômetro<br><em>conta na operação.</em></h2><p>Centralize os registros de saída e retorno, acompanhe a distância percorrida e tenha uma visão clara da utilização dos veículos.</p></div>
+        <div class="km-hero-side"><span class="km-hero-side-icon">↗</span><small>PERÍODO EM ANÁLISE</small><strong id="kmPeriodLabel">Semana selecionada</strong><div class="km-week-controls"><button id="kmPrevWeek" type="button" aria-label="Semana anterior">‹</button><button id="kmThisWeek" type="button">Semana atual</button><button id="kmNextWeek" type="button" aria-label="Próxima semana">›</button></div></div>
+      </section>
+      <div class="km-stat-grid">
+        <article class="km-stat"><span class="km-stat-icon">▤</span><div><small>VIAGENS REGISTRADAS</small><strong id="kmStatTrips">0</strong><em>no período selecionado</em></div></article>
+        <article class="km-stat"><span class="km-stat-icon km-icon-green">↗</span><div><small>DISTÂNCIA PERCORRIDA</small><strong id="kmStatDistance">0 km</strong><em>soma dos trajetos completos</em></div></article>
+        <article class="km-stat"><span class="km-stat-icon km-icon-amber">◷</span><div><small>LANÇAMENTOS PENDENTES</small><strong id="kmStatPending">0</strong><em>aguardando KM inicial/final</em></div></article>
+        <article class="km-stat"><span class="km-stat-icon km-icon-blue">▣</span><div><small>VEÍCULOS EM OPERAÇÃO</small><strong id="kmStatVehicles">0</strong><em>com viagem no período</em></div></article>
       </div>
-      <div class="km-table-wrap"><table class="km-table">
-        <thead><tr><th>Dia</th><th>Município / Veículo</th><th>Solicitante</th><th>KM inicial</th><th>KM final</th><th>Distância</th></tr></thead>
-        <tbody id="kmTableBody"></tbody>
-      </table></div>
+      <section class="km-register-panel">
+        <div class="km-register-heading"><div><p class="section-kicker">LANÇAMENTOS DA FROTA</p><h2>Quilometragem das viagens</h2><p>Informe o hodômetro na saída e no retorno de cada deslocamento.</p></div><span class="km-register-count" id="kmTableCount">0 viagens nesta semana</span></div>
+        <div class="km-table-wrap"><table class="km-table">
+          <thead><tr><th>Dia / data</th><th>Destino / veículo</th><th>Solicitante</th><th>KM inicial</th><th>KM final</th><th>Distância</th></tr></thead>
+          <tbody id="kmTableBody"></tbody>
+        </table></div>
+        <div class="km-table-foot"><span><i></i> Os dados são salvos automaticamente ao preencher os campos.</span><span>KM final deve ser maior que o KM inicial.</span></div>
+      </section>
     </section>
   </main>
 
@@ -369,7 +376,7 @@
   <script>
     // Evita cache de recursos e atualiza abas abertas quando uma nova versão é publicada.
     (() => {
-      const version = "2026110304";
+      const version = "2026110305";
       document.querySelectorAll('link[rel="stylesheet"][href^="styles.css"]').forEach(el => el.href = "styles.css?v=" + version);
       document.querySelectorAll('script[src^="supabase-config.js"], script[src^="app.js"]').forEach(el => {
         const base = el.src.includes("supabase-config.js") ? "supabase-config.js" : "app.js";
