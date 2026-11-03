@@ -923,6 +923,13 @@ function shiftKmWeek(offset) {
   savePeriod();
   renderKmTable();
 }
+document.querySelector("#kmFilterVehicle").addEventListener("change", renderKmTable);
+document.querySelector("#kmFilterDriver").addEventListener("change", renderKmTable);
+document.querySelector("#kmFilterReset").addEventListener("click", () => {
+  document.querySelector("#kmFilterVehicle").value = "";
+  document.querySelector("#kmFilterDriver").value = "";
+  renderKmTable();
+});
 document.querySelector("#kmPrevWeek").addEventListener("click", () => shiftKmWeek(-1));
 document.querySelector("#kmNextWeek").addEventListener("click", () => shiftKmWeek(1));
 document.querySelector("#kmThisWeek").addEventListener("click", () => {
