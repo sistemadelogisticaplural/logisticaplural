@@ -72,38 +72,40 @@
       <button class="topbar-logout-button" data-logout-button type="button" title="Sair da conta"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5v16h5M14 8l4 4-4 4M8 12h10"/></svg><span>Sair</span></button>
     </header>
 
-    <section class="trips-intro" id="tripsIntro"><div class="trips-intro-icon">✦</div><div><strong>Planejamento semanal de viagens</strong><p>Selecione um dia para consultar os deslocamentos. Cada bloco reúne horários, responsáveis, equipe e custos. Use “Adicionar viagem” para registrar uma nova saída.</p></div><div class="trips-intro-legend"><span><i class="legend-dot dot-trip"></i>Operação</span><span><i class="legend-dot dot-cost"></i>Custos</span><span><i class="legend-dot dot-team"></i>Equipe</span></div></section>
-    <section class="week-header" aria-label="Navegação por semanas">
-      <button class="week-arrow" id="previousWeek" type="button" aria-label="Semana anterior"><svg viewBox="0 0 24 24"><path d="M15 18 9 12l6-6" /></svg></button>
-      <strong id="monthName">Outubro</strong>
-      <button class="week-arrow" id="nextWeek" type="button" aria-label="Próxima semana"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg></button>
-    </section>
-
-    <section class="week-toolbar" aria-label="Seleção de dia">
-      <button class="day-tab active" data-day="segunda"><span>SEG</span><strong>Segunda</strong><em class="day-number" id="date-segunda">-</em><b id="count-segunda">0</b></button>
-      <button class="day-tab" data-day="terca"><span>TER</span><strong>Terça</strong><em class="day-number" id="date-terca">-</em><b id="count-terca">0</b></button>
-      <button class="day-tab" data-day="quarta"><span>QUA</span><strong>Quarta</strong><em class="day-number" id="date-quarta">-</em><b id="count-quarta">0</b></button>
-      <button class="day-tab" data-day="quinta"><span>QUI</span><strong>Quinta</strong><em class="day-number" id="date-quinta">-</em><b id="count-quinta">0</b></button>
-      <button class="day-tab" data-day="sexta"><span>SEX</span><strong>Sexta</strong><em class="day-number" id="date-sexta">-</em><b id="count-sexta">0</b></button>
-    </section>
-
-    <section class="content-head" id="tripsContentHead">
-      <div>
-        <p class="section-kicker">PERÍODO SEMANAL</p>
-        <h2 id="selectedDayTitle">Segunda-feira</h2>
+    <section class="trips-hero" id="tripsIntro">
+      <div class="trips-hero-copy">
+        <span class="trips-hero-tag"><i></i> GESTÃO DE DESLOCAMENTOS</span>
+        <h2 id="tripsHeroTitle">Viagens organizadas,<br><em>operação em movimento.</em></h2>
+        <p id="tripsHeroDescription">Centralize as solicitações, acompanhe os deslocamentos da equipe e tenha uma visão clara da programação semanal.</p>
+        <button class="trips-hero-button" id="tripsHeroAction" type="button"><span>＋</span> Adicionar viagem</button>
       </div>
-      <button class="primary-button" id="addTripButton" type="button"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Adicionar viagem</button>
+      <div class="trips-hero-art" aria-hidden="true"><div class="trips-orbit trips-orbit-one"></div><div class="trips-orbit trips-orbit-two"></div><div class="trips-hero-symbol">↗</div><span class="trips-hero-chip trips-chip-top">✓ Planejamento</span><span class="trips-hero-chip trips-chip-bottom">⌁ Equipe & rotas</span></div>
     </section>
-
-    <section class="summary-strip">
-      <div><span>Viagens</span><strong id="tripTotal">0</strong></div>
-      <div><span>Colaboradores</span><strong id="peopleTotal">0</strong></div>
-      <div><span>Custo total</span><strong id="costTotal">R$ 0,00</strong></div>
-      <button id="generateButton" class="outline-button" type="button"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg>Gerar texto automático</button>
+    <div class="trips-stat-grid">
+      <article class="trips-stat"><span class="trips-stat-icon">▣</span><div><small>VIAGENS NA SEMANA</small><strong id="tripTotal">0</strong><em>deslocamentos programados</em></div></article>
+      <article class="trips-stat"><span class="trips-stat-icon trips-stat-green">♙</span><div><small>COLABORADORES</small><strong id="peopleTotal">0</strong><em>pessoas envolvidas</em></div></article>
+      <article class="trips-stat"><span class="trips-stat-icon trips-stat-blue">R$</span><div><small>CUSTO TOTAL</small><strong id="costTotal">R$ 0,00</strong><em>valor estimado da semana</em></div></article>
+      <article class="trips-stat trips-stat-action"><span class="trips-stat-icon trips-stat-amber">▤</span><div><small>RESUMO OPERACIONAL</small><strong>Relatórios</strong><em>geração de texto automático</em><button id="generateButton" class="trips-report-button" type="button">Gerar resumo <span>↗</span></button></div></article>
+    </div>
+    <section class="trips-schedule-panel">
+      <div class="trips-section-heading">
+        <div><p class="section-kicker">PROGRAMAÇÃO DA FROTA</p><h2>Viagens da semana</h2><p>Escolha o período e o dia para consultar os deslocamentos.</p></div>
+        <div class="trips-week-nav"><button class="week-arrow" id="previousWeek" type="button" aria-label="Semana anterior">‹</button><strong id="monthName">Outubro</strong><button class="week-arrow" id="nextWeek" type="button" aria-label="Próxima semana">›</button></div>
+      </div>
+      <section class="week-toolbar" aria-label="Seleção de dia">
+        <button class="day-tab active" data-day="segunda"><span>SEG</span><strong>Segunda</strong><em class="day-number" id="date-segunda">-</em><b id="count-segunda">0</b></button>
+        <button class="day-tab" data-day="terca"><span>TER</span><strong>Terça</strong><em class="day-number" id="date-terca">-</em><b id="count-terca">0</b></button>
+        <button class="day-tab" data-day="quarta"><span>QUA</span><strong>Quarta</strong><em class="day-number" id="date-quarta">-</em><b id="count-quarta">0</b></button>
+        <button class="day-tab" data-day="quinta"><span>QUI</span><strong>Quinta</strong><em class="day-number" id="date-quinta">-</em><b id="count-quinta">0</b></button>
+        <button class="day-tab" data-day="sexta"><span>SEX</span><strong>Sexta</strong><em class="day-number" id="date-sexta">-</em><b id="count-sexta">0</b></button>
+      </section>
+      <div class="trips-day-heading" id="tripsContentHead">
+        <div><p class="section-kicker">DETALHAMENTO DO DIA</p><h2 id="selectedDayTitle">Segunda-feira</h2></div>
+        <button class="trips-add-button" id="addTripButton" type="button"><span>＋</span> Adicionar viagem</button>
+      </div>
+      <section class="trip-list" id="tripList" aria-live="polite"></section>
+      <div class="editor-submission-note" id="editorSubmissionNote" hidden><strong>✦ Solicitação de viagem</strong><p>Preencha os dados que você conhece. A administração completará as informações operacionais após receber sua solicitação.</p></div>
     </section>
-
-    <section class="trip-list" id="tripList" aria-live="polite"></section>
-    <div class="editor-submission-note" id="editorSubmissionNote" hidden><strong>✦ Solicitação de viagem — EDITOR ADM</strong><p>Preencha os dados que você conhece. A administração completará o motorista, veículo, custeio, equipe e custos após receber a solicitação.</p></div>
   </main>
 
   <main class="main screen travel-panel-screen" id="travelPanelScreen" hidden>
