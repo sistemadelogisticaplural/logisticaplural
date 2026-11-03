@@ -1541,3 +1541,4 @@ async function exportTravelPanelPdf() {
   }
 }
 document.querySelector("#travelExportPdf")?.addEventListener("click", exportTravelPanelPdf);
+document.querySelector("#travelHeroPdf")?.addEventListener("click", exportTravelPanelPdf);
