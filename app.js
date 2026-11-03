@@ -459,44 +459,60 @@ function renderTravelDayDetails(allTrips = getAllTripsForTravelPanel()) {
 
 function renderKmTable() {
   const body = document.querySelector("#kmTableBody");
-  const rows = [];
   const allWeekTrips = Object.entries(DAYS).flatMap(([day, dayName]) =>
     trips[day].filter(trip => trip.weekStart === periodSettings.weekStart).map(trip => ({...trip, day, dayName}))
   );
-  const totalKm = allWeekTrips.reduce((sum, trip) => sum + getTripDistance(trip), 0);
-  const pending = allWeekTrips.filter(trip => !(Number(trip.kmInitial) > 0) || !(Number(trip.kmFinal) > Number(trip.kmInitial))).length;
-  const vehicleCount = new Set(allWeekTrips.map(trip => (trip.vehicle || "").trim()).filter(Boolean)).size;
+  const vehicleSelect = document.querySelector("#kmFilterVehicle");
+  const driverSelect = document.querySelector("#kmFilterDriver");
+  const selectedVehicle = vehicleSelect.value;
+  const selectedDriver = driverSelect.value;
+  const uniqueVehicles = [...new Set(allWeekTrips.map(t => String(t.vehicle || "").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"pt-BR"));
+  const uniqueDrivers = [...new Set(allWeekTrips.map(t => String(t.driver || "").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"pt-BR"));
+  vehicleSelect.innerHTML = '<option value="">Todos os veículos</option>' + uniqueVehicles.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
+  driverSelect.innerHTML = '<option value="">Todos os motoristas</option>' + uniqueDrivers.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
+  vehicleSelect.value = uniqueVehicles.includes(selectedVehicle) ? selectedVehicle : "";
+  driverSelect.value = uniqueDrivers.includes(selectedDriver) ? selectedDriver : "";
+  const filteredTrips = allWeekTrips.filter(t =>
+    (!vehicleSelect.value || String(t.vehicle || "").trim() === vehicleSelect.value) &&
+    (!driverSelect.value || String(t.driver || "").trim() === driverSelect.value)
+  );
+  const totalKm = filteredTrips.reduce((sum, trip) => sum + getTripDistance(trip), 0);
+  const pending = filteredTrips.filter(trip => !(Number(trip.kmInitial) > 0) || !(Number(trip.kmFinal) > Number(trip.kmInitial))).length;
+  const vehicleCount = new Set(filteredTrips.map(trip => (trip.vehicle || "").trim()).filter(Boolean)).size;
   const dates = getWeekDates();
   const first = dates[0], last = dates[4];
-  const periodLabel = first && last
-    ? `${String(first.getDate()).padStart(2,"0")} ${monthNames[first.getMonth()].slice(0,3)} – ${String(last.getDate()).padStart(2,"0")} ${monthNames[last.getMonth()].slice(0,3)} ${last.getFullYear()}`
-    : "Semana selecionada";
+  const periodLabel = first && last ? `${String(first.getDate()).padStart(2,"0")} ${monthNames[first.getMonth()].slice(0,3)} – ${String(last.getDate()).padStart(2,"0")} ${monthNames[last.getMonth()].slice(0,3)} ${last.getFullYear()}` : "Semana selecionada";
   document.querySelector("#kmPeriodLabel").textContent = periodLabel;
-  document.querySelector("#kmStatTrips").textContent = allWeekTrips.length;
+  document.querySelector("#kmStatTrips").textContent = filteredTrips.length;
   document.querySelector("#kmStatDistance").textContent = `${totalKm.toLocaleString("pt-BR")} km`;
   document.querySelector("#kmStatPending").textContent = pending;
   document.querySelector("#kmStatVehicles").textContent = vehicleCount;
-  document.querySelector("#kmTableCount").textContent = `${allWeekTrips.length} ${allWeekTrips.length === 1 ? "viagem" : "viagens"} nesta semana`;
+  document.querySelector("#kmTableCount").textContent = `${filteredTrips.length} de ${allWeekTrips.length} ${allWeekTrips.length === 1 ? "viagem" : "viagens"}`;
+  document.querySelector("#kmFilterSummary").textContent = (vehicleSelect.value || driverSelect.value)
+    ? `Exibindo ${filteredTrips.length} viagem(ns) • ${totalKm.toLocaleString("pt-BR")} km no filtro`
+    : "Selecione um veículo e/ou motorista para conferir e contabilizar a quilometragem individual.";
 
+  const rows = [];
   Object.entries(DAYS).forEach(([day, dayName]) => {
     trips[day].filter(trip => trip.weekStart === periodSettings.weekStart).forEach(trip => {
+      if (vehicleSelect.value && String(trip.vehicle || "").trim() !== vehicleSelect.value) return;
+      if (driverSelect.value && String(trip.driver || "").trim() !== driverSelect.value) return;
       const index = trips[day].indexOf(trip);
-      const initial = Number(trip.kmInitial || 0);
-      const final = Number(trip.kmFinal || 0);
+      const initial = Number(trip.kmInitial || 0), final = Number(trip.kmFinal || 0);
       const distance = final > initial ? final - initial : 0;
       const dayIndex = Object.keys(DAYS).indexOf(day);
       const complete = initial > 0 && final > initial;
       rows.push(`<tr>
         <td class="km-day-cell"><span class="km-day-mark">${dayName.slice(0,3).toUpperCase()}</span><div><strong>${dayName}</strong><span>${escapeHtml(formatPeriodDay(dayIndex))}</span></div></td>
         <td class="km-route-cell"><strong>${escapeHtml(trip.municipality || "Não informado")}</strong><span>🚘 ${escapeHtml(trip.vehicle || "Veículo não informado")}</span></td>
-        <td class="km-requester-cell">${escapeHtml(trip.requester || "Não informado")}</td>
+        <td class="km-requester-cell"><strong>${escapeHtml(trip.driver || "Motorista não informado")}</strong><span>Solicitante: ${escapeHtml(trip.requester || "Não informado")}</span></td>
         <td><label class="km-entry"><span>INICIAL</span><input class="km-input" aria-label="KM inicial" data-day="${day}" data-index="${index}" data-kind="initial" type="number" min="0" step="1" value="${trip.kmInitial ?? ""}" placeholder="0" ${currentProfile && ["admin","editor"].includes(currentProfile.role) ? "" : "disabled"} /></label></td>
         <td><label class="km-entry"><span>FINAL</span><input class="km-input" aria-label="KM final" data-day="${day}" data-index="${index}" data-kind="final" type="number" min="0" step="1" value="${trip.kmFinal ?? ""}" placeholder="0" ${currentProfile && ["admin","editor"].includes(currentProfile.role) ? "" : "disabled"} /></label></td>
         <td><div class="km-distance-pill ${complete ? "is-complete" : "is-pending"}">${complete ? `+${distance.toLocaleString("pt-BR")} km` : "Pendente"}</div></td>
       </tr>`);
     });
   });
-  body.innerHTML = rows.length ? rows.join("") : `<tr><td class="km-empty" colspan="6"><div class="km-empty-icon">↗</div><strong>Nenhuma viagem nesta semana</strong><span>Quando houver viagens cadastradas, os lançamentos de quilometragem aparecerão aqui.</span></td></tr>`;
+  body.innerHTML = rows.length ? rows.join("") : `<tr><td class="km-empty" colspan="6"><div class="km-empty-icon">↗</div><strong>Nenhuma viagem encontrada</strong><span>Ajuste os filtros ou consulte outra semana.</span></td></tr>`;
 }
 function renderWeekHeader() {
   const dates = getWeekDates();
