@@ -676,6 +676,7 @@ document.querySelectorAll(".day-tab").forEach((button) => {
 });
 
 document.querySelector("#addTripButton").addEventListener("click", openModal);
+document.querySelector("#tripsHeroAction")?.addEventListener("click", openModal);
 document.querySelector("#addCollaboratorButton").addEventListener("click", () => addCollaboratorRow());
 document.querySelector("#closeModalButton").addEventListener("click", closeModal);
 document.querySelector("#cancelModalButton").addEventListener("click", closeModal);
