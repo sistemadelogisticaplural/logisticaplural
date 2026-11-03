@@ -289,7 +289,7 @@ h2 { font-size: 21px; }
 
 .editor-modal-note{margin:0 34px;padding:13px 15px;border:1px solid #a6e3d4;border-radius:12px;background:#edfbf6;color:#12665b}.editor-modal-note strong,.editor-modal-note span{display:block}.editor-modal-note strong{font-size:11px;letter-spacing:.04em}.editor-modal-note span{margin-top:5px;font-size:11px;line-height:1.5;color:#547b76}@media(max-width:680px){.editor-modal-note{margin:0 14px}}
 
-/* cache-bust 2026110301 */
+/* cache-bust 2026110302 */
 
 /* Solicitação de viagem simplificada: esconder por completo os campos que a administração completará */
 .trip-modal.editor-request-mode .trip-form-section:has(#collaboratorRows){display:none!important}
@@ -543,3 +543,44 @@ body.sidebar-collapsed .main{width:calc(100% - 78px);margin-left:78px}
 #vehiclesPanel .driver-form{grid-template-columns:minmax(220px,1fr) auto;align-items:end}
 #vehiclesPanel .driver-form .primary-button{min-height:42px}
 @media(max-width:680px){.settings-tabs{display:grid;grid-template-columns:1fr 1fr}.settings-tab{justify-content:flex-start;padding:0 10px;font-size:10px}.settings-tab-content{width:100%}#vehiclesPanel .driver-form{grid-template-columns:1fr}}
+
+/* Painel de manutenção da frota */
+.maintenance-content{padding:24px 0 50px}
+.maintenance-subtitle{margin:6px 0 0;color:var(--muted);font-size:13px}
+.maintenance-layout{display:grid;grid-template-columns:minmax(240px,330px) minmax(0,1fr);gap:18px;align-items:start}
+.maintenance-vehicle-grid{display:grid;grid-template-columns:1fr;gap:10px}
+.maintenance-vehicle-card{display:grid;grid-template-columns:42px 1fr;grid-template-rows:auto auto auto;gap:4px 10px;text-align:left;padding:16px;border:1px solid var(--line);border-radius:12px;background:white;cursor:pointer;transition:.18s}
+.maintenance-vehicle-card:hover,.maintenance-vehicle-card.active{border-color:var(--green);box-shadow:0 5px 18px rgba(20,70,55,.08)}
+.maintenance-card-icon{grid-row:1/4;display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:var(--green-soft);color:var(--green-dark);font-size:20px}
+.maintenance-vehicle-card strong{font-size:13px;color:var(--ink)}
+.maintenance-vehicle-card>span:not(.maintenance-card-icon){font-size:11px;color:var(--muted)}
+.maintenance-vehicle-card small{font-size:10px;color:var(--green-dark);font-weight:700}
+.maintenance-history{min-height:300px}
+.maintenance-history-content{padding:18px}
+.maintenance-current-km{padding:16px;border-radius:10px;background:#f1f7f5;margin-bottom:20px}
+.maintenance-current-km span,.maintenance-current-km small{display:block;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.5px}
+.maintenance-current-km strong{display:block;margin:6px 0;font-size:25px;color:var(--green-dark)}
+.maintenance-current-km small{font-weight:400;letter-spacing:0}
+.maintenance-history-content h3{margin:20px 0 10px;font-size:13px}
+.maintenance-due-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px}
+.maintenance-due-row{padding:12px;border:1px solid var(--line);border-radius:9px}
+.maintenance-due-row span,.maintenance-due-row strong,.maintenance-due-row small{display:block}
+.maintenance-due-row span{font-size:11px;font-weight:700}
+.maintenance-due-row strong{margin:6px 0;font-size:12px}
+.maintenance-due-row small{font-size:10px;color:var(--muted)}
+.maintenance-overdue{color:#b42318}.maintenance-warning{color:#b76e00}.maintenance-ok{color:#087a5c}.maintenance-neutral{color:var(--muted)}
+.maintenance-history-list{display:grid;gap:8px}
+.maintenance-history-item{display:flex;justify-content:space-between;gap:12px;padding:14px;border:1px solid var(--line);border-radius:9px}
+.maintenance-history-item strong,.maintenance-history-item span,.maintenance-history-item small{display:block}
+.maintenance-history-item strong{font-size:13px}.maintenance-history-item span,.maintenance-history-item small{margin-top:4px;font-size:11px;color:var(--muted)}
+.maintenance-history-item p{margin:8px 0 0;font-size:12px;color:var(--ink)}
+.maintenance-delete{align-self:flex-start;border:0;border-radius:7px;padding:7px 9px;background:#fff0ee;color:#b42318;font-size:10px;font-weight:700;cursor:pointer}
+.maintenance-empty{padding:22px;text-align:center;color:var(--muted);font-size:12px}
+.maintenance-form-panel{margin-top:20px;max-width:900px}
+.maintenance-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:20px}
+.maintenance-form label{display:grid;gap:6px;color:var(--muted);font-size:10px;font-weight:800;letter-spacing:.5px}
+.maintenance-form input,.maintenance-form select,.maintenance-form textarea{width:100%;min-height:42px;padding:10px;border:1px solid var(--line);border-radius:8px;background:white;color:var(--ink);font:inherit;font-size:13px}
+.maintenance-form textarea{resize:vertical}
+.maintenance-wide{grid-column:1/-1}
+@media(max-width:850px){.maintenance-layout{grid-template-columns:1fr}.maintenance-vehicle-grid{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}}
+@media(max-width:600px){.maintenance-form{grid-template-columns:1fr}.maintenance-wide{grid-column:auto}.maintenance-content .content-head{align-items:flex-start;gap:12px;flex-direction:column}}
