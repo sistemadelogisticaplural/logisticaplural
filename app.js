@@ -794,7 +794,8 @@ function updateMaintenanceStats(){
 }
 function renderMaintenance(){
  const grid=document.querySelector("#maintenanceVehicleGrid"); if(!grid)return;
- updateMaintenanceStats();\n const formSelect=document.querySelector("#maintenanceVehicle");
+ updateMaintenanceStats();
+ const formSelect=document.querySelector("#maintenanceVehicle");
  const old=formSelect?.value;
  if(formSelect) formSelect.innerHTML='<option value="">Selecione um veículo</option>'+vehicles.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
  if(old&&vehicles.includes(old))formSelect.value=old;
