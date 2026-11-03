@@ -253,9 +253,10 @@ function render() {
   const allTrips = Object.values(trips).flat().filter((trip) => trip.weekStart === periodSettings.weekStart);
   const people = allTrips.reduce((total, trip) => total + trip.collaborators.length, 0);
   const cost = allTrips.reduce((total, trip) => total + Number(trip.fuelCost) + trip.collaborators.reduce((sum, person) => sum + Number(person.cost || 0), 0), 0);
-  document.querySelector("#tripTotal").textContent = allTrips.length;
+  document.querySelector("#tripTotal").textContent = editorMode ? Object.values(trips).flat().filter(t => t.weekStart === periodSettings.weekStart && t.submittedBy === (currentProfile.display_name || currentProfile.login_code || "Editor")).length : allTrips.length;
   document.querySelector("#peopleTotal").textContent = people;
   document.querySelector("#costTotal").textContent = money(cost);
+  document.querySelector("#tripsHeroAction")?.classList.toggle("is-admin", currentProfile?.role === "admin");
   if (!document.querySelector("#dashboardScreen").hidden) renderDashboard();
   if (!document.querySelector("#travelPanelScreen").hidden) renderTravelPanel();
 
@@ -1119,9 +1120,13 @@ function applyCurrentProfile() {
     document.querySelector("#tripsScreen").hidden = false;
     document.querySelector("#editorTripsNav")?.classList.add("active");
     document.querySelector("#tripsNav")?.classList.remove("active");
-    document.querySelector("#tripsIntro").hidden = true;
+    document.querySelector("#tripsIntro").hidden = false;
+    document.querySelector("#tripsHeroTitle").innerHTML = "Suas viagens,<br><em>organizadas em um só lugar.</em>";
+    document.querySelector("#tripsHeroDescription").textContent = "Acompanhe suas solicitações, consulte os dias programados e mantenha a administração informada sobre cada deslocamento.";
+    document.querySelector("#tripsHeroAction").innerHTML = "<span>＋</span> Solicitar viagem";
+    document.querySelector("#tripsHeroAction").onclick = () => openModal();
     document.querySelector("#tripsContentHead").querySelector("h2").textContent = "Minhas solicitações de viagem";
-    document.querySelector("#addTripButton").textContent = "Solicitar viagem";
+    document.querySelector("#addTripButton").innerHTML = "<span>＋</span> Solicitar viagem";
     document.querySelector("#editorSubmissionNote").hidden = false;
   }
   if (editorTripsNav && currentProfile.role === "editor") editorTripsNav.querySelector("span").textContent = "Minhas viagens";
