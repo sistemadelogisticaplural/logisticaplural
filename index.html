@@ -208,30 +208,40 @@
       <button class="topbar-logout-button" data-logout-button type="button" title="Sair da conta"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5v16h5M14 8l4 4-4 4M8 12h10"/></svg><span>Sair</span></button>
     </header>
     <section class="dashboard-content">
-      <div class="dashboard-range">
-        <label>Dia inicial<input id="dashboardStartDate" type="date" /></label>
-        <label>Dia final<input id="dashboardEndDate" type="date" /></label>
-      </div>
+      <section class="dashboard-hero">
+        <div class="dashboard-hero-copy">
+          <span class="dashboard-hero-tag"><i></i> VISÃO INTELIGENTE DA OPERAÇÃO</span>
+          <h2>Gestão em foco,<br><em>decisões com clareza.</em></h2>
+          <p>Acompanhe viagens, equipes, custos e quilometragem em um painel único. Selecione o período e tenha os principais indicadores da operação à mão.</p>
+        </div>
+        <div class="dashboard-hero-art" aria-hidden="true"><div class="dashboard-orbit dashboard-orbit-one"></div><div class="dashboard-orbit dashboard-orbit-two"></div><div class="dashboard-hero-symbol">▥</div><span class="dashboard-hero-chip dashboard-chip-top">✓ Indicadores</span><span class="dashboard-hero-chip dashboard-chip-bottom">⌁ Operação</span></div>
+      </section>
+      <section class="dashboard-filter-panel">
+        <div><p class="section-kicker">PERÍODO DE ANÁLISE</p><h2>Filtrar indicadores</h2><p>Defina o intervalo para atualizar os números e gráficos abaixo.</p></div>
+        <div class="dashboard-range">
+          <label>Dia inicial<input id="dashboardStartDate" type="date" /></label>
+          <span class="dashboard-range-separator">ATÉ</span>
+          <label>Dia final<input id="dashboardEndDate" type="date" /></label>
+        </div>
+      </section>
       <div class="dashboard-cards">
-        <article class="metric-card"><span>Viagens</span><strong id="dashboardTrips">0</strong><small>na semana</small></article>
-        <article class="metric-card"><span>Colaboradores</span><strong id="dashboardPeople">0</strong><small>participações</small></article>
-        <article class="metric-card"><span>Custo total</span><strong id="dashboardCost">R$ 0,00</strong><small>gasolina + ajuda</small></article>
-        <article class="metric-card"><span>KM total</span><strong id="dashboardKm">0 km</strong><small>semana selecionada</small></article>
+        <article class="metric-card dashboard-stat"><span class="dashboard-stat-icon">↗</span><div><small>VIAGENS</small><strong id="dashboardTrips">0</strong><em>no período selecionado</em></div></article>
+        <article class="metric-card dashboard-stat"><span class="dashboard-stat-icon dashboard-stat-green">♙</span><div><small>COLABORADORES</small><strong id="dashboardPeople">0</strong><em>participações registradas</em></div></article>
+        <article class="metric-card dashboard-stat"><span class="dashboard-stat-icon dashboard-stat-blue">R$</span><div><small>CUSTO TOTAL</small><strong id="dashboardCost">R$ 0,00</strong><em>combustível + ajuda de custo</em></div></article>
+        <article class="metric-card dashboard-stat"><span class="dashboard-stat-icon dashboard-stat-amber">⌁</span><div><small>QUILOMETRAGEM</small><strong id="dashboardKm">0 km</strong><em>distância registrada</em></div></article>
       </div>
-
       <div class="dashboard-grid">
-        <section class="dashboard-panel">
-          <div class="panel-head"><div><p class="section-kicker">SEMANA</p><h2>Viagens por dia</h2></div></div>
+        <section class="dashboard-panel dashboard-chart-panel">
+          <div class="panel-head"><div><p class="section-kicker">DISTRIBUIÇÃO</p><h2>Viagens por dia</h2><p>Volume de deslocamentos ao longo da semana.</p></div><span class="dashboard-panel-badge">SEMANA</span></div>
           <div class="day-bars" id="dashboardDayBars"></div>
         </section>
-        <section class="dashboard-panel">
-          <div class="panel-head"><div><p class="section-kicker">RESUMO</p><h2>Custos da semana</h2></div></div>
-          <div class="cost-summary"><div><span>Gasolina</span><strong id="dashboardFuel">R$ 0,00</strong></div><div><span>Ajuda de custo</span><strong id="dashboardHelp">R$ 0,00</strong></div><div><span>Municípios</span><strong id="dashboardMunicipalities">0</strong></div></div>
+        <section class="dashboard-panel dashboard-chart-panel">
+          <div class="panel-head"><div><p class="section-kicker">FINANCEIRO</p><h2>Resumo de custos</h2><p>Composição das despesas no período.</p></div><span class="dashboard-panel-badge">CUSTOS</span></div>
+          <div class="cost-summary"><div><span>Gasolina</span><strong id="dashboardFuel">R$ 0,00</strong></div><div><span>Ajuda de custo</span><strong id="dashboardHelp">R$ 0,00</strong></div><div><span>Municípios atendidos</span><strong id="dashboardMunicipalities">0</strong></div></div>
         </section>
       </div>
-
-      <section class="dashboard-panel vehicle-chart-panel">
-        <div class="vehicle-chart-head"><span class="vehicle-chart-icon"><svg viewBox="0 0 24 24"><path d="M3 6h11v11H3zM14 10h4l3 3v4h-7zM7 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm11 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg></span><h2>KM por Veículo</h2></div>
+      <section class="dashboard-panel vehicle-chart-panel dashboard-vehicle-panel">
+        <div class="vehicle-chart-head"><span class="vehicle-chart-icon"><svg viewBox="0 0 24 24"><path d="M3 6h11v11H3zM14 10h4l3 3v4h-7zM7 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm11 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg></span><div><p class="section-kicker">DESEMPENHO DA FROTA</p><h2>Quilometragem por veículo</h2></div></div>
         <div class="vehicle-chart" id="vehicleKmChart"></div>
         <div class="vehicle-date-details" id="dashboardVehicleRows"></div>
       </section>
