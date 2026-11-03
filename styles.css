@@ -777,3 +777,17 @@ body.sidebar-collapsed .main{width:calc(100% - 78px);margin-left:78px}
 @media (max-width:1050px) { .travel-hero-art { right:1%;opacity:.72; } .travel-hero-copy { max-width:560px; } }
 @media (max-width:850px) { .travel-panel { grid-template-columns:minmax(0,1fr); } .travel-day-panel { position:static; } .travel-hero { padding:30px; } .travel-hero-art { right:-35px;opacity:.28; } }
 @media (max-width:560px) { .travel-hero { min-height:250px;padding:25px 21px;border-radius:18px; } .travel-hero h2 { font-size:28px; } .travel-hero-art { right:-135px;opacity:.18; } .travel-hero-caption { display:none; } .travel-calendar-area { padding:13px; } .travel-panel-heading { align-items:flex-start;flex-direction:column; } .travel-panel-toolbar { width:100%;justify-content:space-between; } .travel-day-cell { min-height:82px;padding:6px 4px; } .travel-mini-trip span { display:none; } }
+
+/* Editor compacto de colaboradores por viagem */
+.trip-collaborator-manager{display:grid;gap:8px;margin-top:12px;padding:12px;border:1px solid #dceeea;border-radius:11px;background:linear-gradient(135deg,#f7fcfb,#eff8f6)}
+.trip-collaborator-manager>label{color:#416b6b;font-size:10px;font-weight:900;letter-spacing:.65px;text-transform:uppercase}
+.trip-collaborator-controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:7px}
+.trip-collaborator-controls select,.trip-collaborator-controls input{width:100%;min-width:0;height:37px;padding:0 10px;border:1px solid #d7e6e3;border-radius:8px;background:#fff;color:#254e55;font:inherit;font-size:11px;outline:none}
+.trip-collaborator-controls select:focus,.trip-collaborator-controls input:focus{border-color:#159b8a;box-shadow:0 0 0 3px rgba(21,155,138,.1)}
+.trip-collaborator-actions{display:flex;gap:7px;flex-wrap:wrap}
+.trip-collaborator-actions button{min-height:33px;padding:0 11px;border:0;border-radius:8px;font:inherit;font-size:10px;font-weight:800;cursor:pointer}
+.trip-collaborator-save{color:#fff;background:#087e70}
+.trip-collaborator-remove{color:#a94444;background:#fff0ef;border:1px solid #f4d7d5!important}
+.trip-collaborator-remove:disabled{opacity:.4;cursor:not-allowed}
+.trip-collaborator-manager>small{color:#819397;font-size:10px;line-height:1.4}
+@media(max-width:580px){.trip-collaborator-controls{grid-template-columns:1fr}}

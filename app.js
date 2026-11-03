@@ -276,7 +276,21 @@ function render() {
       <div class="trip-detail-grid">
         <section class="trip-detail-block"><div class="trip-block-heading"><span class="trip-block-symbol">◷</span><div><span>01 · CRONOGRAMA</span><h4>Horários da viagem</h4></div></div><div class="trip-time-row"><div><small>SAÍDA</small><strong>${escapeHtml(trip.departureTime || "--:--")}</strong></div><span class="trip-time-line">→</span><div><small>RETORNO</small><strong>${escapeHtml(trip.returnTime || "--:--")}</strong></div></div></section>
         <section class="trip-detail-block"><div class="trip-block-heading"><span class="trip-block-symbol">♙</span><div><span>02 · RESPONSÁVEIS</span><h4>Operação e solicitante</h4></div></div><dl class="trip-facts"><div><dt>Motorista</dt><dd>${escapeHtml(trip.driver || "Não informado")}</dd></div><div><dt>Solicitante</dt><dd>${escapeHtml(trip.requester || "Não informado")}</dd></div><div><dt>Custeio / setor</dt><dd>${escapeHtml(trip.funding || "Não informado")}</dd></div></dl></section>
-        <section class="trip-detail-block"><div class="trip-block-heading"><span class="trip-block-symbol">♧</span><div><span>03 · EQUIPE</span><h4>Colaboradores <b class="trip-count-pill">${trip.collaborators.length}</b></h4></div></div>${trip.collaborators.length ? `<ul class="trip-people-list">${trip.collaborators.map(person => `<li><span>${escapeHtml(person.name)}</span><small>${person.cost ? escapeHtml(person.helpType || "Ajuda de custo") + " · " + money(person.cost) : "Sem ajuda de custo"}</small></li>`).join("")}</ul>` : '<p class="trip-no-data">Nenhum colaborador informado.</p>'}${currentProfile?.role === "editor" ? `<button class="add-trip-collaborator-button" type="button" data-add-collaborator-index="${storageIndex}">＋ Incluir colaborador</button>` : ""}</section>
+        <section class="trip-detail-block"><div class="trip-block-heading"><span class="trip-block-symbol">♧</span><div><span>03 · EQUIPE</span><h4>Colaboradores <b class="trip-count-pill">${trip.collaborators.length}</b></h4></div></div>${trip.collaborators.length ? `<ul class="trip-people-list">${trip.collaborators.map(person => `<li><span>${escapeHtml(person.name)}</span><small>${person.cost ? escapeHtml(person.helpType || "Ajuda de custo") + " · " + money(person.cost) : "Sem ajuda de custo"}</small></li>`).join("")}</ul>` : '<p class="trip-no-data">Nenhum colaborador informado.</p>'}${["admin","editor"].includes(currentProfile?.role) ? `<div class="trip-collaborator-manager" data-collaborator-manager="${storageIndex}">
+          <label>Gerenciar colaboradores</label>
+          <div class="trip-collaborator-controls">
+            <select class="trip-collaborator-select" aria-label="Selecionar colaborador" data-collaborator-select>
+              <option value="">Novo colaborador…</option>
+              ${trip.collaborators.map((person, personIndex) => `<option value="${personIndex}">${escapeHtml(person.name)}</option>`).join("")}
+            </select>
+            <input class="trip-collaborator-name" type="text" maxlength="100" placeholder="Nome do colaborador" aria-label="Nome do colaborador">
+          </div>
+          <div class="trip-collaborator-actions">
+            <button type="button" class="trip-collaborator-save" data-collaborator-save>＋ Adicionar</button>
+            <button type="button" class="trip-collaborator-remove" data-collaborator-remove disabled>Remover selecionado</button>
+          </div>
+          <small>Edite ou remova nomes sem alterar os demais dados da viagem.</small>
+        </div>` : ""}</section>
         <section class="trip-detail-block trip-cost-block"><div class="trip-block-heading"><span class="trip-block-symbol">R$</span><div><span>04 · FINANCEIRO</span><h4>Resumo de custos</h4></div></div><div class="trip-cost-total"><small>CUSTO TOTAL ESTIMADO</small><strong>${money(total)}</strong></div><div class="trip-cost-lines"><div><span>Combustível</span><strong>${money(trip.fuelCost || 0)}</strong></div><div><span>Ajuda de custo</span><strong>${money(totalHelp)}</strong></div></div></section>
       </div></article>`;
   }).join("");
@@ -967,20 +981,48 @@ document.querySelector("#kmTableBody").addEventListener("input", (event) => {
   if (!document.querySelector("#dashboardScreen").hidden) renderDashboard();
 });
 
+tripList.addEventListener("change", (event) => {
+  const select = event.target.closest("[data-collaborator-select]");
+  if (!select) return;
+  const manager = select.closest("[data-collaborator-manager]");
+  const input = manager?.querySelector(".trip-collaborator-name");
+  const saveButton = manager?.querySelector("[data-collaborator-save]");
+  const removeButton = manager?.querySelector("[data-collaborator-remove]");
+  const tripIndex = Number(manager?.dataset.collaboratorManager);
+  const trip = trips[selectedDay]?.[tripIndex];
+  const person = trip?.collaborators?.[Number(select.value)];
+  if (input) input.value = person?.name || "";
+  if (saveButton) saveButton.textContent = select.value === "" ? "＋ Adicionar" : "Salvar alteração";
+  if (removeButton) removeButton.disabled = select.value === "";
+});
+
 tripList.addEventListener("click", (event) => {
-  const addCollaboratorButton = event.target.closest(".add-trip-collaborator-button");
-  if (addCollaboratorButton && currentProfile?.role === "editor") {
-    const tripIndex = Number(addCollaboratorButton.dataset.addCollaboratorIndex);
+  const manager = event.target.closest("[data-collaborator-manager]");
+  const saveCollaborator = event.target.closest("[data-collaborator-save]");
+  const removeCollaborator = event.target.closest("[data-collaborator-remove]");
+  if ((saveCollaborator || removeCollaborator) && manager && currentProfile && ["admin","editor"].includes(currentProfile.role)) {
+    const tripIndex = Number(manager.dataset.collaboratorManager);
     const trip = trips[selectedDay]?.[tripIndex];
-    if (!trip || trip.submittedBy !== (currentProfile.display_name || currentProfile.login_code || "Editor")) return;
-    const name = window.prompt("Digite o nome do colaborador que deseja incluir nesta viagem:");
-    if (name === null) return;
-    const cleanName = name.trim();
-    if (!cleanName) { window.alert("Informe o nome do colaborador."); return; }
-    const duplicate = (trip.collaborators || []).some(person => String(person.name || "").trim().toLocaleLowerCase("pt-BR") === cleanName.toLocaleLowerCase("pt-BR"));
-    if (duplicate) { window.alert("Esse colaborador já está incluído nesta viagem."); return; }
+    if (!trip) return;
+    if (currentProfile.role === "editor" && trip.submittedBy !== (currentProfile.display_name || currentProfile.login_code || "Editor")) return;
     if (!Array.isArray(trip.collaborators)) trip.collaborators = [];
-    trip.collaborators.push({ name: cleanName, cost: 0, helpType: "Não informado" });
+    const select = manager.querySelector("[data-collaborator-select]");
+    const input = manager.querySelector(".trip-collaborator-name");
+    const selected = select.value;
+    if (removeCollaborator) {
+      if (selected === "") return;
+      const personIndex = Number(selected);
+      if (!trip.collaborators[personIndex]) return;
+      if (!window.confirm(`Remover ${trip.collaborators[personIndex].name} desta viagem?`)) return;
+      trip.collaborators.splice(personIndex,1);
+    } else {
+      const cleanName = input.value.trim();
+      if (!cleanName) { input.focus(); return; }
+      const duplicate = trip.collaborators.some((person,index) => index !== (selected === "" ? -1 : Number(selected)) && String(person.name || "").trim().toLocaleLowerCase("pt-BR") === cleanName.toLocaleLowerCase("pt-BR"));
+      if (duplicate) { window.alert("Esse colaborador já está incluído nesta viagem."); return; }
+      if (selected === "") trip.collaborators.push({name:cleanName,cost:0,helpType:"Não informado"});
+      else trip.collaborators[Number(selected)] = {...trip.collaborators[Number(selected)],name:cleanName};
+    }
     save();
     render();
     return;
