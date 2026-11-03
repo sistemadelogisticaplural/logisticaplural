@@ -13,6 +13,9 @@ let currentProfile = null;
 const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 let drivers = JSON.parse(localStorage.getItem("logiflow-drivers") || "[]");
 let vehicles = JSON.parse(localStorage.getItem("logiflow-vehicles") || "[]");
+let maintenances = JSON.parse(localStorage.getItem("logiflow-maintenances") || "[]");
+if (!Array.isArray(maintenances)) maintenances = [];
+let selectedMaintenanceVehicle = "";
 if (!Array.isArray(vehicles)) vehicles = [];
 if (!Array.isArray(drivers)) drivers = [];
 if (!drivers.length) {
@@ -95,12 +98,14 @@ function saveSharedState() {
   localStorage.setItem("logiflow-dashboard-range", JSON.stringify(dashboardRange));
   localStorage.setItem("logiflow-drivers", JSON.stringify(drivers));
   localStorage.setItem("logiflow-vehicles", JSON.stringify(vehicles));
+  localStorage.setItem("logiflow-maintenances", JSON.stringify(maintenances));
   window.logiFlowSync?.save({
     trips,
     periodSettings,
     dashboardRange,
     drivers,
-    vehicles
+    vehicles,
+    maintenances
   });
 }
 
@@ -746,6 +751,86 @@ document.querySelectorAll("[data-settings-tab]").forEach((button) => {
   });
 });
 
+
+const maintenanceTypes = [
+  {name:"Troca de óleo do motor",interval:10000},
+  {name:"Troca do filtro de óleo",interval:10000},
+  {name:"Troca do filtro de ar",interval:10000},
+  {name:"Troca do filtro de combustível",interval:20000},
+  {name:"Troca de pneus",interval:50000},
+  {name:"Rodízio de pneus",interval:10000},
+  {name:"Alinhamento e balanceamento",interval:10000},
+  {name:"Revisão dos freios / pastilhas",interval:20000},
+  {name:"Troca do fluido de freio",interval:20000},
+  {name:"Troca da bateria",interval:40000},
+  {name:"Revisão da suspensão",interval:20000},
+  {name:"Troca de correias",interval:40000},
+  {name:"Revisão do sistema de arrefecimento",interval:20000},
+  {name:"Manutenção preventiva geral",interval:10000},
+  {name:"Outro serviço",interval:0}
+];
+let selectedMaintenanceType = "";
+function currentVehicleKm(vehicle) {
+  return Object.values(trips).flat().filter(t => String(t.vehicle||"").toLowerCase()===String(vehicle).toLowerCase())
+    .reduce((max,t)=>Math.max(max,Number(t.kmFinal||0),Number(t.kmInitial||0)),0);
+}
+function formatMaintenanceMoney(v){return Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});}
+function maintenanceDue(vehicle,type) {
+  const config=maintenanceTypes.find(x=>x.name===type);
+  if(!config||!config.interval)return null;
+  const last=maintenances.filter(x=>x.vehicle===vehicle&&x.type===type).sort((a,b)=>b.km-a.km)[0];
+  if(!last)return {interval:config.interval,lastKm:null,nextKm:null,remaining:null,never:true};
+  const nextKm=Number(last.km)+config.interval, current=currentVehicleKm(vehicle);
+  return {interval:config.interval,lastKm:Number(last.km),nextKm,remaining:nextKm-current,never:false};
+}
+function renderMaintenance(){
+ const grid=document.querySelector("#maintenanceVehicleGrid"); if(!grid)return;
+ const formSelect=document.querySelector("#maintenanceVehicle");
+ const old=formSelect?.value;
+ if(formSelect) formSelect.innerHTML='<option value="">Selecione um veículo</option>'+vehicles.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
+ if(old&&vehicles.includes(old))formSelect.value=old;
+ grid.innerHTML=vehicles.map(v=>{
+  const km=currentVehicleKm(v),count=maintenances.filter(m=>m.vehicle===v).length;
+  const urgent=maintenanceTypes.map(t=>maintenanceDue(v,t.name)).filter(d=>d&&d.remaining!==null&&d.remaining<=1000&&d.remaining>=0).length;
+  return `<button type="button" class="maintenance-vehicle-card ${selectedMaintenanceVehicle===v?"active":""}" data-maintenance-vehicle="${escapeHtml(v)}"><span class="maintenance-card-icon">▣</span><strong>${escapeHtml(v)}</strong><span>${km.toLocaleString("pt-BR")} km registrados</span><small>${count} manutenções · ${urgent} próximas</small></button>`;
+ }).join("")||'<div class="maintenance-empty">Nenhum veículo cadastrado. Adicione veículos em Configurações → Veículos.</div>';
+ if(selectedMaintenanceVehicle&&!vehicles.includes(selectedMaintenanceVehicle))selectedMaintenanceVehicle="";
+ if(!selectedMaintenanceVehicle&&vehicles.length)selectedMaintenanceVehicle=vehicles[0];
+ renderMaintenanceHistory();
+}
+function renderMaintenanceHistory(){
+ const title=document.querySelector("#maintenanceVehicleTitle"),content=document.querySelector("#maintenanceHistoryContent");
+ if(!title||!content)return;
+ const vehicle=selectedMaintenanceVehicle;
+ if(!vehicle){title.textContent="Selecione um veículo";content.innerHTML="<p>Cadastre um veículo para começar o controle de manutenções.</p>";return;}
+ title.textContent=vehicle;
+ const current=currentVehicleKm(vehicle);
+ const alerts=maintenanceTypes.map(t=>({type:t.name,due:maintenanceDue(vehicle,t.name)})).filter(x=>x.due);
+ const alertHtml=alerts.map(({type,due})=>{
+  if(due.never)return `<div class="maintenance-due-row"><span>${escapeHtml(type)}</span><strong class="maintenance-neutral">Sem registro</strong><small>Intervalo sugerido: ${due.interval.toLocaleString("pt-BR")} km</small></div>`;
+  const late=due.remaining<=0,near=due.remaining<=1000;
+  return `<div class="maintenance-due-row"><span>${escapeHtml(type)}</span><strong class="${late?"maintenance-overdue":near?"maintenance-warning":"maintenance-ok"}">${late?"Vencida há "+Math.abs(due.remaining).toLocaleString("pt-BR")+" km":due.remaining.toLocaleString("pt-BR")+" km restantes"}</strong><small>Próxima aos ${due.nextKm.toLocaleString("pt-BR")} km · última aos ${due.lastKm.toLocaleString("pt-BR")} km</small></div>`;
+ }).join("");
+ const history=maintenances.filter(m=>m.vehicle===vehicle).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+ content.innerHTML=`<div class="maintenance-current-km"><span>QUILOMETRAGEM ATUAL REGISTRADA</span><strong>${current.toLocaleString("pt-BR")} km</strong><small>Calculada pelo maior KM final/inicial informado em Registro de KM para este veículo.</small></div><h3>Próximas manutenções</h3><div class="maintenance-due-list">${alertHtml}</div><h3>Histórico de serviços</h3><div class="maintenance-history-list">${history.map(m=>`<article class="maintenance-history-item"><div><strong>${escapeHtml(m.type)}</strong><span>${new Date(m.date+"T12:00:00").toLocaleDateString("pt-BR")} · ${Number(m.km).toLocaleString("pt-BR")} km</span><small>${escapeHtml(m.workshop||"Oficina não informada")} · ${formatMaintenanceMoney(m.value)}</small>${m.notes?`<p>${escapeHtml(m.notes)}</p>`:""}</div><button type="button" class="maintenance-delete" data-maintenance-id="${escapeHtml(m.id)}">Remover</button></article>`).join("")||'<p class="maintenance-empty">Nenhuma manutenção registrada para este veículo.</p>'}</div>`;
+}
+document.querySelector("#maintenanceVehicleGrid").addEventListener("click",e=>{const card=e.target.closest("[data-maintenance-vehicle]");if(!card)return;selectedMaintenanceVehicle=card.dataset.maintenanceVehicle;renderMaintenance();});
+document.querySelector("#openMaintenanceForm").addEventListener("click",()=>{const panel=document.querySelector("#maintenanceFormPanel");panel.hidden=false;document.querySelector("#maintenanceVehicle").value=selectedMaintenanceVehicle||"";document.querySelector("#maintenanceForm").elements.date.value=new Date().toLocaleDateString("en-CA");panel.scrollIntoView({behavior:"smooth",block:"start"});});
+document.querySelector("#closeMaintenanceForm").addEventListener("click",()=>document.querySelector("#maintenanceFormPanel").hidden=true);
+document.querySelector("#maintenanceType").innerHTML=maintenanceTypes.map(t=>`<option value="${escapeHtml(t.name)}">${escapeHtml(t.name)}${t.interval?" · "+t.interval.toLocaleString("pt-BR")+" km":""}</option>`).join("");
+document.querySelector("#maintenanceForm").addEventListener("submit",e=>{
+ e.preventDefault();const f=e.currentTarget,d=Object.fromEntries(new FormData(f).entries());
+ if(!d.vehicle){alert("Selecione um veículo.");return;}
+ if(Number(d.km)<0||Number(d.value)<0){alert("KM e valor devem ser positivos.");return;}
+ maintenances.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),vehicle:d.vehicle,type:d.type,notes:d.notes.trim(),date:d.date,km:Number(d.km),value:Number(d.value),workshop:d.workshop.trim(),createdAt:new Date().toISOString()});
+ selectedMaintenanceVehicle=d.vehicle;saveSharedState();renderMaintenance();f.reset();document.querySelector("#maintenanceFormPanel").hidden=true;
+});
+document.querySelector("#maintenanceHistoryContent").addEventListener("click",e=>{
+ const btn=e.target.closest("[data-maintenance-id]");if(!btn)return;
+ if(!confirm("Deseja remover este registro de manutenção?"))return;
+ maintenances=maintenances.filter(m=>m.id!==btn.dataset.maintenanceId);saveSharedState();renderMaintenance();
+});
+
 document.querySelectorAll(".nav-item[data-view]").forEach((button) => {
   button.addEventListener("click", () => {
     document.querySelectorAll(".nav-item[data-view]").forEach((item) => item.classList.remove("active"));
@@ -761,6 +846,8 @@ document.querySelectorAll(".nav-item[data-view]").forEach((button) => {
     if (view === "trips") document.querySelector("#editorTripsNav")?.classList.remove("active");
     if (editorView || view === "trips") render();
     document.querySelector("#kmScreen").hidden = view !== "km";
+    document.querySelector("#maintenanceScreen").hidden = view !== "maintenance";
+    if (view === "maintenance") renderMaintenance();
     document.querySelector("#travelPanelScreen").hidden = view !== "travelPanel";
     if (view === "travelPanel") renderTravelPanel();
     document.querySelector("#dashboardScreen").hidden = view !== "dashboard";
@@ -881,6 +968,11 @@ function applySharedState(state) {
   if (state.dashboardRange && typeof state.dashboardRange === "object") {
     dashboardRange = state.dashboardRange;
     localStorage.setItem("logiflow-dashboard-range", JSON.stringify(dashboardRange));
+  }
+  if (Array.isArray(state.maintenances)) {
+    maintenances = state.maintenances.filter((item) => item && typeof item === "object");
+    localStorage.setItem("logiflow-maintenances", JSON.stringify(maintenances));
+    renderMaintenance();
   }
   if (Array.isArray(state.vehicles)) {
     vehicles = state.vehicles.filter((name) => typeof name === "string" && name.trim());
