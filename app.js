@@ -875,11 +875,21 @@ document.querySelector("#maintenanceHistoryContent").addEventListener("click",e=
  maintenances=maintenances.filter(m=>m.id!==btn.dataset.maintenanceId);saveSharedState();renderMaintenance();
 });
 
+function restoreLastActiveView() {
+  if (!currentProfile || currentProfile.role === "editor") return;
+  const savedView = localStorage.getItem("pluralmed-active-view");
+  const allowed = new Set(["trips", "dashboard", "travelPanel", "km", "maintenance", "text", "settings"]);
+  if (!savedView || !allowed.has(savedView)) return;
+  const target = document.querySelector(`.nav-item[data-view="${savedView}"]`);
+  if (target && !target.hidden) target.click();
+}
+
 document.querySelectorAll(".nav-item[data-view]").forEach((button) => {
   button.addEventListener("click", () => {
     document.querySelectorAll(".nav-item[data-view]").forEach((item) => item.classList.remove("active"));
     button.classList.add("active");
     const view = button.dataset.view;
+    localStorage.setItem("pluralmed-active-view", view);
     document.querySelector("#tripsScreen").hidden = !["trips","editorTrips"].includes(view);
     const editorView = view === "editorTrips";
     document.querySelector("#addTripButton").textContent = editorView ? "Solicitar viagem" : "Adicionar viagem";
@@ -1021,39 +1031,82 @@ async function initializeSharedState() {
 
 function applySharedState(state) {
   if (!state || typeof state !== "object") return;
-  lastSharedStateSignature = sharedStateSignature(state);
+  const signature = sharedStateSignature(state);
+  if (signature && signature === lastSharedStateSignature) return;
+  lastSharedStateSignature = signature;
+
+  let tripsChanged = false;
+  let periodChanged = false;
+  let maintenanceChanged = false;
+  let vehiclesChanged = false;
+  let driversChanged = false;
+
   if (state.trips && typeof state.trips === "object") {
-    trips = state.trips;
+    const incomingTrips = { ...state.trips };
     Object.keys(DAYS).forEach((day) => {
-      if (!Array.isArray(trips[day])) trips[day] = [];
+      if (!Array.isArray(incomingTrips[day])) incomingTrips[day] = [];
     });
-    localStorage.setItem("logiflow-trips", JSON.stringify(trips));
+    tripsChanged = JSON.stringify(incomingTrips) !== JSON.stringify(trips);
+    if (tripsChanged) {
+      trips = incomingTrips;
+      localStorage.setItem("logiflow-trips", JSON.stringify(trips));
+    }
   }
   if (state.periodSettings && typeof state.periodSettings === "object") {
-    periodSettings = state.periodSettings;
-    localStorage.setItem("logiflow-period", JSON.stringify(periodSettings));
+    periodChanged = JSON.stringify(state.periodSettings) !== JSON.stringify(periodSettings);
+    if (periodChanged) {
+      periodSettings = state.periodSettings;
+      localStorage.setItem("logiflow-period", JSON.stringify(periodSettings));
+    }
   }
   if (state.dashboardRange && typeof state.dashboardRange === "object") {
-    dashboardRange = state.dashboardRange;
-    localStorage.setItem("logiflow-dashboard-range", JSON.stringify(dashboardRange));
+    if (JSON.stringify(state.dashboardRange) !== JSON.stringify(dashboardRange)) {
+      dashboardRange = state.dashboardRange;
+      localStorage.setItem("logiflow-dashboard-range", JSON.stringify(dashboardRange));
+    }
   }
   if (Array.isArray(state.maintenances)) {
-    maintenances = state.maintenances.filter((item) => item && typeof item === "object");
-    localStorage.setItem("logiflow-maintenances", JSON.stringify(maintenances));
-    renderMaintenance();
+    const incoming = state.maintenances.filter((item) => item && typeof item === "object");
+    maintenanceChanged = JSON.stringify(incoming) !== JSON.stringify(maintenances);
+    if (maintenanceChanged) {
+      maintenances = incoming;
+      localStorage.setItem("logiflow-maintenances", JSON.stringify(maintenances));
+    }
   }
   if (Array.isArray(state.vehicles)) {
-    vehicles = state.vehicles.filter((name) => typeof name === "string" && name.trim());
-    localStorage.setItem("logiflow-vehicles", JSON.stringify(vehicles));
-    renderVehicles();
+    const incoming = state.vehicles.filter((name) => typeof name === "string" && name.trim());
+    vehiclesChanged = JSON.stringify(incoming) !== JSON.stringify(vehicles);
+    if (vehiclesChanged) {
+      vehicles = incoming;
+      localStorage.setItem("logiflow-vehicles", JSON.stringify(vehicles));
+    }
   }
   if (Array.isArray(state.drivers)) {
-    drivers = state.drivers.filter((name) => typeof name === "string" && name.trim());
-    localStorage.setItem("logiflow-drivers", JSON.stringify(drivers));
+    const incoming = state.drivers.filter((name) => typeof name === "string" && name.trim());
+    driversChanged = JSON.stringify(incoming) !== JSON.stringify(drivers);
+    if (driversChanged) {
+      drivers = incoming;
+      localStorage.setItem("logiflow-drivers", JSON.stringify(drivers));
+    }
+  }
+
+  // Atualiza somente os componentes afetados, sem reconstruir a tela ativa.
+  if (tripsChanged || periodChanged) {
+    const activeScreen = document.querySelector(".main.screen:not([hidden])");
+    if (activeScreen?.id === "tripsScreen") render();
+    if (activeScreen?.id === "dashboardScreen") renderDashboard();
+    if (activeScreen?.id === "travelPanelScreen") renderTravelPanel();
+    if (activeScreen?.id === "kmScreen") renderKmTable();
+  }
+  if (maintenanceChanged && !document.querySelector("#maintenanceScreen").hidden) renderMaintenance();
+  if (vehiclesChanged) {
+    renderVehicles();
+    if (!document.querySelector("#maintenanceScreen").hidden) renderMaintenance();
+  }
+  if (driversChanged) {
     renderDriverOptions();
     renderDrivers();
   }
-  render();
 }
 
 initializeSharedState();
@@ -1084,6 +1137,7 @@ async function showLoginOrApp() {
       document.querySelector("#loginOverlay").hidden = true;
       applyCurrentProfile();
       await initializeSharedState();
+      restoreLastActiveView();
     } else {
       document.querySelector("#loginOverlay").hidden = false;
     }
@@ -1169,7 +1223,7 @@ document.querySelector("#loginForm").addEventListener("submit",async(event)=>{
    const created=await window.logiFlowSync.bootstrapAdmin(token,displayName,loginCode,password);if(created.error)throw created.error;
    const loginResult=await window.logiFlowSync.login(loginCode,password);if(loginResult.error||!loginResult.data?.session)throw new Error("Administrador criado. Entre com o login e a senha definidos.");
    currentProfile=await window.logiFlowSync.getCurrentProfile();if(!currentProfile||currentProfile.role!=="admin")throw new Error("Não foi possível confirmar o perfil administrador.");
-   document.querySelector("#loginOverlay").hidden=true;applyCurrentProfile();await initializeSharedState();return;
+   document.querySelector("#loginOverlay").hidden=true;applyCurrentProfile();await initializeSharedState();restoreLastActiveView();return;
   }
   const loginCode=document.querySelector("#loginCode").value.trim(),password=document.querySelector("#loginPassword").value;
   const {data,error}=await window.logiFlowSync.login(loginCode,password);if(error||!data?.session)throw new Error("Código ou senha inválidos.");
