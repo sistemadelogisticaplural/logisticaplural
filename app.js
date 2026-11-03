@@ -12,6 +12,8 @@ let editingTripDay = null;
 let currentProfile = null;
 const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 let drivers = JSON.parse(localStorage.getItem("logiflow-drivers") || "[]");
+let vehicles = JSON.parse(localStorage.getItem("logiflow-vehicles") || "[]");
+if (!Array.isArray(vehicles)) vehicles = [];
 if (!Array.isArray(drivers)) drivers = [];
 if (!drivers.length) {
   drivers = [
@@ -92,11 +94,13 @@ function saveSharedState() {
   localStorage.setItem("logiflow-period", JSON.stringify(periodSettings));
   localStorage.setItem("logiflow-dashboard-range", JSON.stringify(dashboardRange));
   localStorage.setItem("logiflow-drivers", JSON.stringify(drivers));
+  localStorage.setItem("logiflow-vehicles", JSON.stringify(vehicles));
   window.logiFlowSync?.save({
     trips,
     periodSettings,
     dashboardRange,
-    drivers
+    drivers,
+    vehicles
   });
 }
 
@@ -729,6 +733,19 @@ document.querySelector("#dashboardEndDate").addEventListener("change", (event) =
   renderDashboard();
 });
 
+document.querySelectorAll("[data-settings-tab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll("[data-settings-tab]").forEach((item) => item.classList.toggle("active", item === button));
+    document.querySelectorAll("[data-settings-panel]").forEach((panel) => {
+      const active = panel.dataset.settingsPanel === button.dataset.settingsTab;
+      panel.hidden = !active;
+      panel.classList.toggle("active", active);
+    });
+    if (button.dataset.settingsTab === "management") renderAccounts();
+    if (button.dataset.settingsTab === "vehicles") renderVehicles();
+  });
+});
+
 document.querySelectorAll(".nav-item[data-view]").forEach((button) => {
   button.addEventListener("click", () => {
     document.querySelectorAll(".nav-item[data-view]").forEach((item) => item.classList.remove("active"));
@@ -865,6 +882,11 @@ function applySharedState(state) {
     dashboardRange = state.dashboardRange;
     localStorage.setItem("logiflow-dashboard-range", JSON.stringify(dashboardRange));
   }
+  if (Array.isArray(state.vehicles)) {
+    vehicles = state.vehicles.filter((name) => typeof name === "string" && name.trim());
+    localStorage.setItem("logiflow-vehicles", JSON.stringify(vehicles));
+    renderVehicles();
+  }
   if (Array.isArray(state.drivers)) {
     drivers = state.drivers.filter((name) => typeof name === "string" && name.trim());
     localStorage.setItem("logiflow-drivers", JSON.stringify(drivers));
@@ -950,6 +972,8 @@ function applyCurrentProfile() {
   document.querySelector("#newAccountPanel").hidden = !canManage;
   document.querySelector("#accountsPanel").hidden = !canManage;
   document.querySelector("#driversPanel").hidden = !canManage;
+  document.querySelector("#vehiclesPanel").hidden = !canManage;
+  document.querySelector("#vehicleForm").hidden = !canManage;
   document.querySelector("#driverForm").hidden = !canManage;
   document.querySelector("#addTripButton").hidden = !canEdit;
   document.querySelectorAll(".delete-button").forEach((button) => { button.hidden = !canEdit; });
@@ -1045,6 +1069,42 @@ function renderDrivers() {
   `).join("") || "<p>Nenhum motorista cadastrado.</p>";
   renderDriverOptions();
 }
+
+function renderVehicleOptions() {
+  const select = document.querySelector("#tripVehicle");
+  if (!select) return;
+  const currentValue = select.value;
+  select.innerHTML = '<option value="">Selecione o veículo</option>' + vehicles.map((name) => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join("");
+  if (vehicles.includes(currentValue)) select.value = currentValue;
+}
+function renderVehicles() {
+  const list = document.querySelector("#vehiclesList");
+  if (!list) return;
+  list.innerHTML = vehicles.map((name, index) => `<div class="driver-row" data-vehicle-index="${index}"><strong>${escapeHtml(name)}</strong><button class="driver-remove vehicle-remove" type="button" aria-label="Remover ${escapeHtml(name)}">Remover</button></div>`).join("") || "<p>Nenhum veículo cadastrado.</p>";
+  renderVehicleOptions();
+}
+document.querySelector("#vehicleForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const name = String(new FormData(form).get("vehicleName") || "").trim();
+  if (!name) return;
+  if (vehicles.some((item) => item.toLocaleLowerCase("pt-BR") === name.toLocaleLowerCase("pt-BR"))) { alert("Este veículo já está cadastrado."); return; }
+  vehicles.push(name);
+  vehicles.sort((a,b) => a.localeCompare(b,"pt-BR"));
+  form.reset(); renderVehicles(); saveSharedState();
+});
+document.querySelector("#vehiclesList").addEventListener("click", (event) => {
+  const button = event.target.closest(".vehicle-remove");
+  if (!button) return;
+  const row = button.closest("[data-vehicle-index]");
+  const name = vehicles[Number(row.dataset.vehicleIndex)];
+  if (Object.values(trips).flat().some((trip) => String(trip.vehicle || "").toLocaleLowerCase("pt-BR") === String(name).toLocaleLowerCase("pt-BR"))) {
+    if (!confirm("Este veículo aparece em viagens já registradas. Removê-lo do cadastro? Os registros antigos serão preservados.")) return;
+  }
+  vehicles.splice(Number(row.dataset.vehicleIndex),1);
+  renderVehicles(); saveSharedState();
+});
+renderVehicleOptions();
 
 document.querySelector("#driverForm").addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -1144,6 +1204,7 @@ document.querySelector("#accountsList").addEventListener("click", async (event) 
 
 document.querySelector("#settingsNav").addEventListener("click", () => {
   renderDriverOptions();
+  renderVehicles();
   if (currentProfile?.role === "admin") {
     renderDrivers();
     renderAccounts();
