@@ -6,8 +6,8 @@
  <clipPath id="heart"><path d="M128 235 25 132C-8 98 13 30 66 23c25-3 47 9 62 31 15-22 37-34 62-31 53 7 74 75 41 109Z"/></clipPath>
 </defs>
 <g clip-path="url(#heart)">
- <rect width="128" height="150" fill="url(#blue)"/>
- <rect x="128" width="128" height="150" fill="url(#lime)"/>
- <path d="M0 0 128 0 256 0 128 128 0 256Z" fill="url(#cyan)"/>
+ <path fill="url(#blue)" d="M0 0H128L45 165 0 120Z"/>
+ <path fill="url(#lime)" d="M128 0H256V120L211 165 128 80Z"/>
+ <path fill="url(#cyan)" d="M45 165 128 80 211 165 128 256Z"/>
 </g>
 </svg>
