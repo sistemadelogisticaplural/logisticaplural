@@ -147,6 +147,12 @@
       </div>
       <section class="km-register-panel">
         <div class="km-register-heading"><div><p class="section-kicker">LANÇAMENTOS DA FROTA</p><h2>Quilometragem das viagens</h2><p>Informe o hodômetro na saída e no retorno de cada deslocamento.</p></div><span class="km-register-count" id="kmTableCount">0 viagens nesta semana</span></div>
+        <div class="km-filters" aria-label="Filtros de quilometragem">
+          <label class="km-filter-field"><span class="km-filter-icon">▣</span><span class="km-filter-label">FILTRAR POR VEÍCULO</span><select id="kmFilterVehicle"><option value="">Todos os veículos</option></select></label>
+          <label class="km-filter-field"><span class="km-filter-icon">♙</span><span class="km-filter-label">FILTRAR POR MOTORISTA</span><select id="kmFilterDriver"><option value="">Todos os motoristas</option></select></label>
+          <button class="km-filter-reset" id="kmFilterReset" type="button">Limpar filtros</button>
+          <p class="km-filter-summary" id="kmFilterSummary">Selecione um veículo e/ou motorista para conferir e contabilizar a quilometragem individual.</p>
+        </div>
         <div class="km-table-wrap"><table class="km-table">
           <thead><tr><th>Dia / data</th><th>Destino / veículo</th><th>Solicitante</th><th>KM inicial</th><th>KM final</th><th>Distância</th></tr></thead>
           <tbody id="kmTableBody"></tbody>
@@ -376,7 +382,7 @@
   <script>
     // Evita cache de recursos e atualiza abas abertas quando uma nova versão é publicada.
     (() => {
-      const version = "2026110306";
+      const version = "2026110307";
       document.querySelectorAll('link[rel="stylesheet"][href^="styles.css"]').forEach(el => el.href = "styles.css?v=" + version);
       document.querySelectorAll('script[src^="supabase-config.js"], script[src^="app.js"]').forEach(el => {
         const base = el.src.includes("supabase-config.js") ? "supabase-config.js" : "app.js";
