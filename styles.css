@@ -791,3 +791,6 @@ body.sidebar-collapsed .main{width:calc(100% - 78px);margin-left:78px}
 .trip-collaborator-remove:disabled{opacity:.4;cursor:not-allowed}
 .trip-collaborator-manager>small{color:#819397;font-size:10px;line-height:1.4}
 @media(max-width:580px){.trip-collaborator-controls{grid-template-columns:1fr}}
+
+/* Campo de ajuda de custo do motorista */
+.trip-field input[name="driverHelpCost"],.trip-field select[name="driverHelpType"]{width:100%}

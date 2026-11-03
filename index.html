@@ -379,6 +379,8 @@
         <section class="trip-form-section"><div class="trip-section-heading"><span class="trip-section-icon">02</span><div><h3>Transporte e horários</h3><p>Defina a equipe responsável e o período do deslocamento.</p></div></div>
           <div class="trip-field-grid">
             <label class="trip-field"><span>Motorista <b>*</b><i class="tip" tabindex="0" title="Selecione o condutor responsável pelo veículo." data-tip="Selecione o condutor responsável pelo veículo." aria-label="Ajuda: motorista">?</i></span><select name="driver" id="tripDriver" required><option value="">Selecione o motorista</option></select></label>
+            <label class="trip-field"><span>Ajuda de custo do motorista</span><div class="money-input"><span>R$</span><input name="driverHelpCost" type="number" min="0" step="0.01" placeholder="0,00" /></div><small class="field-hint">Valor destinado ao motorista nesta viagem.</small></label>
+            <label class="trip-field"><span>Empresa / custeio do motorista</span><select name="driverHelpType"><option value="">Selecione a empresa</option><option>PLURALMED GESTÃO</option><option>PLURALMED EDUCAÇÃO</option><option>PLURALMED TECNOLOGIAS</option><option>PRIMETECH</option><option>IGEP SAÚDE</option></select><small class="field-hint">Empresa responsável pelo lançamento da ajuda de custo.</small></label>
             <label class="trip-field"><span>Veículo / placa <b>*</b><i class="tip" tabindex="0" title="Informe a placa do veículo utilizado. Exemplo: ABC1D23." data-tip="Informe a placa do veículo utilizado. Exemplo: ABC1D23." aria-label="Ajuda: placa do veículo">?</i></span><select name="vehicle" id="tripVehicle" required><option value="">Cadastre e selecione um veículo</option></select></label>
           </div>
           <div class="trip-field-grid">
@@ -413,7 +415,7 @@
   <script>
     // Evita cache de recursos e atualiza abas abertas quando uma nova versão é publicada.
     (() => {
-      const version = "2026110317";
+      const version = "2026110318";
       document.querySelectorAll('link[rel="stylesheet"][href^="styles.css"]').forEach(el => el.href = "styles.css?v=" + version);
       document.querySelectorAll('script[src^="supabase-config.js"], script[src^="app.js"]').forEach(el => {
         const base = el.src.includes("supabase-config.js") ? "supabase-config.js" : "app.js";

@@ -252,7 +252,7 @@ function render() {
 
   const allTrips = Object.values(trips).flat().filter((trip) => trip.weekStart === periodSettings.weekStart);
   const people = allTrips.reduce((total, trip) => total + trip.collaborators.length, 0);
-  const cost = allTrips.reduce((total, trip) => total + Number(trip.fuelCost) + trip.collaborators.reduce((sum, person) => sum + Number(person.cost || 0), 0), 0);
+  const cost = allTrips.reduce((total, trip) => total + Number(trip.fuelCost) + Number(trip.driverHelpCost || 0) + trip.collaborators.reduce((sum, person) => sum + Number(person.cost || 0), 0), 0);
   document.querySelector("#tripTotal").textContent = editorMode ? Object.values(trips).flat().filter(t => t.weekStart === periodSettings.weekStart && t.submittedBy === (currentProfile.display_name || currentProfile.login_code || "Editor")).length : allTrips.length;
   document.querySelector("#peopleTotal").textContent = people;
   document.querySelector("#costTotal").textContent = money(cost);
@@ -269,7 +269,8 @@ function render() {
   const selectedDate = formatPeriodDay(selectedDayIndex);
   tripList.innerHTML = dayTrips.map((trip, index) => {
     const totalHelp = trip.collaborators.reduce((sum, person) => sum + Number(person.cost || 0), 0);
-    const total = Number(trip.fuelCost || 0) + totalHelp;
+    const driverHelp = Number(trip.driverHelpCost || 0);
+    const total = Number(trip.fuelCost || 0) + totalHelp + driverHelp;
     const storageIndex = trips[selectedDay].indexOf(trip);
     return `<article class="trip-card trip-card-detailed ${trip.status === "pending_admin" ? "trip-pending-admin" : ""}">
       <header class="trip-card-header"><div class="trip-card-title"><span class="trip-number">VIAGEM ${String(index + 1).padStart(2,"0")}</span>${trip.status === "pending_admin" ? '<span class="editor-admin-badge" title="Solicitação enviada por editor para revisão administrativa">EDITOR ADM · AGUARDANDO COMPLEMENTO</span>' : ""}<h3>${escapeHtml(trip.municipality || "Município não informado")}</h3><p>${escapeHtml(trip.requester || "Solicitante não informado")} · ${escapeHtml(trip.vehicle || "Veículo não informado")}</p></div><div class="trip-card-date"><span>DATA</span><strong>${escapeHtml(selectedDate)}</strong></div>${currentProfile?.role === "admin" ? `<button class="edit-trip-button" type="button" data-edit-index="${storageIndex}" title="Completar ou editar dados da viagem" aria-label="Editar viagem">✎ Completar dados</button>` : ""}<button class="delete-button" type="button" data-index="${storageIndex}" title="Excluir viagem" aria-label="Excluir viagem"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V3h8v3M6 6l1 15h10l1-15M10 10v7M14 10v7"/></svg></button></header>
@@ -291,7 +292,7 @@ function render() {
           </div>
           <small>Edite ou remova nomes sem alterar os demais dados da viagem.</small>
         </div>` : ""}</section>
-        <section class="trip-detail-block trip-cost-block"><div class="trip-block-heading"><span class="trip-block-symbol">R$</span><div><span>04 · FINANCEIRO</span><h4>Resumo de custos</h4></div></div><div class="trip-cost-total"><small>CUSTO TOTAL ESTIMADO</small><strong>${money(total)}</strong></div><div class="trip-cost-lines"><div><span>Combustível</span><strong>${money(trip.fuelCost || 0)}</strong></div><div><span>Ajuda de custo</span><strong>${money(totalHelp)}</strong></div></div></section>
+        <section class="trip-detail-block trip-cost-block"><div class="trip-block-heading"><span class="trip-block-symbol">R$</span><div><span>04 · FINANCEIRO</span><h4>Resumo de custos</h4></div></div><div class="trip-cost-total"><small>CUSTO TOTAL ESTIMADO</small><strong>${money(total)}</strong></div><div class="trip-cost-lines"><div><span>Combustível</span><strong>${money(trip.fuelCost || 0)}</strong></div><div><span>Ajuda de custo colaboradores</span><strong>${money(totalHelp)}</strong></div><div><span>Ajuda de custo motorista</span><strong>${money(driverHelp)}</strong></div></div></section>
       </div></article>`;
   }).join("");
 }
@@ -451,7 +452,8 @@ function renderTravelDayDetails(allTrips = getAllTripsForTravelPanel()) {
     const key = `${trip.day}:${trip.storageIndex}`;
     const expanded = travelExpandedTripKey === key;
     const totalHelp = (trip.collaborators || []).reduce((sum, person) => sum + Number(person.cost || 0), 0);
-    const total = Number(trip.fuelCost || 0) + totalHelp;
+    const driverHelp = Number(trip.driverHelpCost || 0);
+    const total = Number(trip.fuelCost || 0) + totalHelp + driverHelp;
     return `<article class="travel-detail-card ${expanded ? "expanded" : ""}">
       <button type="button" class="travel-trip-summary" data-travel-trip="${key}"><span class="travel-status-dot"></span><span class="travel-trip-main"><strong>${escapeHtml(trip.municipality || "Destino não informado")}</strong><small>${escapeHtml(trip.departureTime || "--:--")}–${escapeHtml(trip.returnTime || "--:--")} · ${escapeHtml(trip.vehicle || "Veículo não informado")}</small></span><span class="travel-trip-count">${(trip.collaborators || []).length} pessoas</span><span class="travel-expand-icon">${expanded ? "−" : "+"}</span></button>
       ${expanded ? `<div class="travel-trip-expanded">
@@ -602,7 +604,7 @@ function openModal(tripIndex = null) {
   if (tripIndex !== null) {
     const trip = trips[selectedDay][tripIndex];
     if (trip) {
-      Object.entries({requester:trip.requester, municipality:trip.municipality, funding:trip.funding, driver:trip.driver, vehicle:trip.vehicle, departureTime:trip.departureTime, returnTime:trip.returnTime, fuelCost:trip.fuelCost}).forEach(([key,value]) => { if (tripForm.elements[key]) tripForm.elements[key].value = value ?? ""; });
+      Object.entries({requester:trip.requester, municipality:trip.municipality, funding:trip.funding, driver:trip.driver, driverHelpCost:trip.driverHelpCost, driverHelpType:trip.driverHelpType, vehicle:trip.vehicle, departureTime:trip.departureTime, returnTime:trip.returnTime, fuelCost:trip.fuelCost}).forEach(([key,value]) => { if (tripForm.elements[key]) tripForm.elements[key].value = value ?? ""; });
     }
   }
   renderDriverOptions();
@@ -626,7 +628,8 @@ function generateSummary() {
     lines.push(`\n${dayName}:`);
     weekTrips.forEach((trip, index) => {
       const helpTotal = trip.collaborators.reduce((sum, person) => sum + Number(person.cost || 0), 0);
-      const total = Number(trip.fuelCost) + helpTotal;
+      const driverHelp = Number(trip.driverHelpCost || 0);
+      const total = Number(trip.fuelCost) + helpTotal + driverHelp;
       lines.push(`${index + 1}. Solicitante: ${trip.requester}`);
       const dayIndex = Object.keys(DAYS).indexOf(day);
       const date = getWeekDates()[dayIndex];
@@ -639,8 +642,10 @@ function generateSummary() {
       lines.push(`   Horário de volta: ${trip.returnTime || "Não informado"}`);
       lines.push(`   Colaboradores:`);
       trip.collaborators.forEach((person) => lines.push(`   - ${person.name}: ${person.helpType || "Não informado"} - ajuda de custo ${money(person.cost || 0)}`));
+      lines.push(`   Ajuda de custo do motorista: ${money(driverHelp)}${trip.driverHelpType ? " · " + trip.driverHelpType : ""}`);
       lines.push(`   Custo de gasolina: ${money(trip.fuelCost)}`);
-      lines.push(`   Total de ajuda de custo: ${money(helpTotal)}`);
+      lines.push(`   Total de ajuda de custo dos colaboradores: ${money(helpTotal)}`);
+      lines.push(`   Total de ajuda de custo (motorista + colaboradores): ${money(helpTotal + driverHelp)}`);
       lines.push(`   Custo total da viagem: ${money(total)}`);
     });
   });
@@ -758,6 +763,8 @@ tripForm.addEventListener("submit", (event) => {
     returnTime,
     collaborators,
     fuelCost: Number(data.get("fuelCost") || 0),
+    driverHelpCost: isEditorSubmission ? 0 : Number(data.get("driverHelpCost") || 0),
+    driverHelpType: isEditorSubmission ? "" : String(data.get("driverHelpType") || "").trim(),
     status: isEditorSubmission ? "pending_admin" : (editingTripIndex !== null ? (trips[selectedDay][editingTripIndex]?.status || "approved") : "approved"),
     submittedBy: isEditorSubmission ? (currentProfile.display_name || currentProfile.login_code || "Editor") : (editingTripIndex !== null ? (trips[selectedDay][editingTripIndex]?.submittedBy || "") : "")
   };
