@@ -783,9 +783,18 @@ function maintenanceDue(vehicle,type) {
   const nextKm=Number(last.km)+config.interval, current=currentVehicleKm(vehicle);
   return {interval:config.interval,lastKm:Number(last.km),nextKm,remaining:nextKm-current,never:false};
 }
+function updateMaintenanceStats(){
+ const attention=vehicles.reduce((sum,v)=>sum+maintenanceTypes.map(t=>maintenanceDue(v,t.name)).filter(d=>d&&!d.never&&d.remaining<=1000).length,0);
+ const total=maintenances.reduce((sum,m)=>sum+Number(m.value||0),0);
+ const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};
+ set("maintenanceVehicleCount",vehicles.length.toLocaleString("pt-BR"));
+ set("maintenanceServiceCount",maintenances.length.toLocaleString("pt-BR"));
+ set("maintenanceAttentionCount",attention.toLocaleString("pt-BR"));
+ set("maintenanceTotalCost",total.toLocaleString("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0}));
+}
 function renderMaintenance(){
  const grid=document.querySelector("#maintenanceVehicleGrid"); if(!grid)return;
- const formSelect=document.querySelector("#maintenanceVehicle");
+ updateMaintenanceStats();\n const formSelect=document.querySelector("#maintenanceVehicle");
  const old=formSelect?.value;
  if(formSelect) formSelect.innerHTML='<option value="">Selecione um veículo</option>'+vehicles.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
  if(old&&vehicles.includes(old))formSelect.value=old;
