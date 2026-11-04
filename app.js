@@ -839,7 +839,7 @@ function formatMaintenanceMoney(v){return Number(v||0).toLocaleString("pt-BR",{s
 function maintenanceDue(vehicle,type) {
   const config=maintenanceTypes.find(x=>x.name===type);
   if(!config||!config.interval)return null;
-  const last=maintenances.filter(x=>x.vehicle===vehicle&&x.type===type).sort((a,b)=>b.km-a.km)[0];
+  const last=maintenances.filter(x=>x.vehicle===vehicle&&x.type===type&&Number.isFinite(Number(x.km))).sort((a,b)=>Number(b.km)-Number(a.km))[0];
   if(!last)return {interval:config.interval,lastKm:null,nextKm:null,remaining:null,never:true};
   const nextKm=Number(last.km)+config.interval, current=currentVehicleKm(vehicle);
   return {interval:config.interval,lastKm:Number(last.km),nextKm,remaining:nextKm-current,never:false};
@@ -883,20 +883,55 @@ function renderMaintenanceHistory(){
   return `<div class="maintenance-due-row"><span>${escapeHtml(type)}</span><strong class="${late?"maintenance-overdue":near?"maintenance-warning":"maintenance-ok"}">${late?"Vencida há "+Math.abs(due.remaining).toLocaleString("pt-BR")+" km":due.remaining.toLocaleString("pt-BR")+" km restantes"}</strong><small>Próxima aos ${due.nextKm.toLocaleString("pt-BR")} km · última aos ${due.lastKm.toLocaleString("pt-BR")} km</small></div>`;
  }).join("");
  const history=maintenances.filter(m=>m.vehicle===vehicle).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
- content.innerHTML=`<div class="maintenance-current-km"><span>QUILOMETRAGEM ATUAL REGISTRADA</span><strong>${current.toLocaleString("pt-BR")} km</strong><small>Calculada pelo maior KM final/inicial informado em Registro de KM para este veículo.</small></div><h3>Próximas manutenções</h3><div class="maintenance-due-list">${alertHtml}</div><h3>Histórico de serviços</h3><div class="maintenance-history-list">${history.map(m=>`<article class="maintenance-history-item"><div><strong>${escapeHtml(m.type)}</strong><span>${new Date(m.date+"T12:00:00").toLocaleDateString("pt-BR")} · ${Number(m.km).toLocaleString("pt-BR")} km</span><small>${escapeHtml(m.workshop||"Oficina não informada")} · ${formatMaintenanceMoney(m.value)}</small>${m.notes?`<p>${escapeHtml(m.notes)}</p>`:""}</div><button type="button" class="maintenance-delete" data-maintenance-id="${escapeHtml(m.id)}">Remover</button></article>`).join("")||'<p class="maintenance-empty">Nenhuma manutenção registrada para este veículo.</p>'}</div>`;
+ content.innerHTML=`<div class="maintenance-current-km"><span>QUILOMETRAGEM ATUAL REGISTRADA</span><strong>${current.toLocaleString("pt-BR")} km</strong><small>Calculada pelo maior KM final/inicial informado em Registro de KM para este veículo.</small></div><h3>Próximas manutenções</h3><div class="maintenance-due-list">${alertHtml}</div><h3>Histórico de serviços</h3><div class="maintenance-history-list">${history.map(m=>`<article class="maintenance-history-item"><div><strong>${escapeHtml(m.type)}</strong><span>${m.date?new Date(m.date+"T12:00:00").toLocaleDateString("pt-BR"):"Data não informada"} · ${m.km!==null&&m.km!==undefined?Number(m.km).toLocaleString("pt-BR")+" km":"KM não informado"}</span><small>${escapeHtml(m.workshop||"Oficina não informada")} · ${m.value!==null&&m.value!==undefined?formatMaintenanceMoney(m.value):"Valor não informado"}</small>${m.notes?`<p>${escapeHtml(m.notes)}</p>`:""}</div><div class="maintenance-history-actions"><button type="button" class="maintenance-edit" data-maintenance-edit="${escapeHtml(m.id)}">Editar</button><button type="button" class="maintenance-delete" data-maintenance-id="${escapeHtml(m.id)}">Remover</button></div></article>`).join("")||'<p class="maintenance-empty">Nenhuma manutenção registrada para este veículo.</p>'}</div>`;
 }
 document.querySelector("#maintenanceVehicleGrid").addEventListener("click",e=>{const card=e.target.closest("[data-maintenance-vehicle]");if(!card)return;selectedMaintenanceVehicle=card.dataset.maintenanceVehicle;renderMaintenance();});
 document.querySelector("#openMaintenanceForm").addEventListener("click",()=>{const panel=document.querySelector("#maintenanceFormPanel");panel.hidden=false;document.querySelector("#maintenanceVehicle").value=selectedMaintenanceVehicle||"";document.querySelector("#maintenanceForm").elements.date.value=new Date().toLocaleDateString("en-CA");panel.scrollIntoView({behavior:"smooth",block:"start"});});
 document.querySelector("#closeMaintenanceForm").addEventListener("click",()=>document.querySelector("#maintenanceFormPanel").hidden=true);
 document.querySelector("#maintenanceType").innerHTML=maintenanceTypes.map(t=>`<option value="${escapeHtml(t.name)}">${escapeHtml(t.name)}${t.interval?" · "+t.interval.toLocaleString("pt-BR")+" km":""}</option>`).join("");
+let editingMaintenanceId=null;
+document.querySelector("#openMaintenanceForm").addEventListener("click",()=>{
+ editingMaintenanceId=null;
+ const f=document.querySelector("#maintenanceForm");f.reset();
+ const panel=document.querySelector("#maintenanceFormPanel");panel.hidden=false;
+ f.elements.vehicle.value=selectedMaintenanceVehicle||"";
+ f.elements.date.value=new Date().toLocaleDateString("en-CA");
+ document.querySelector("#maintenanceFormPanel .panel-head h2").textContent="Registrar manutenção";
+ f.querySelector('button[type="submit"]').innerHTML='Salvar manutenção <span>→</span>';
+ panel.scrollIntoView({behavior:"smooth",block:"start"});
+});
 document.querySelector("#maintenanceForm").addEventListener("submit",e=>{
  e.preventDefault();const f=e.currentTarget,d=Object.fromEntries(new FormData(f).entries());
  if(!d.vehicle){alert("Selecione um veículo.");return;}
- if(Number(d.km)<0||Number(d.value)<0){alert("KM e valor devem ser positivos.");return;}
- maintenances.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),vehicle:d.vehicle,type:d.type,notes:d.notes.trim(),date:d.date,km:Number(d.km),value:Number(d.value),workshop:d.workshop.trim(),createdAt:new Date().toISOString()});
- selectedMaintenanceVehicle=d.vehicle;saveSharedState();renderMaintenance();f.reset();document.querySelector("#maintenanceFormPanel").hidden=true;
+ if(!d.type){alert("Selecione o tipo de serviço.");return;}
+ const km=d.km===""?null:Number(d.km),value=d.value===""?null:Number(d.value);
+ if((km!==null&&km<0)||(value!==null&&value<0)){alert("KM e valor devem ser positivos.");return;}
+ const record={vehicle:d.vehicle,type:d.type,notes:d.notes.trim(),date:d.date||"",km,value,workshop:d.workshop.trim()};
+ if(editingMaintenanceId){
+  const index=maintenances.findIndex(m=>m.id===editingMaintenanceId);
+  if(index>=0)maintenances[index]={...maintenances[index],...record,updatedAt:new Date().toISOString()};
+ }else{
+  maintenances.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),...record,createdAt:new Date().toISOString()});
+ }
+ selectedMaintenanceVehicle=d.vehicle;saveSharedState();renderMaintenance();f.reset();editingMaintenanceId=null;
+ document.querySelector("#maintenanceFormPanel").hidden=true;
+ document.querySelector("#maintenanceFormPanel .panel-head h2").textContent="Registrar manutenção";
+ f.querySelector('button[type="submit"]').innerHTML='Salvar manutenção <span>→</span>';
 });
 document.querySelector("#maintenanceHistoryContent").addEventListener("click",e=>{
+ const edit=e.target.closest("[data-maintenance-edit]");
+ if(edit){
+  const item=maintenances.find(m=>m.id===edit.dataset.maintenanceEdit);if(!item)return;
+  editingMaintenanceId=item.id;
+  const f=document.querySelector("#maintenanceForm"),panel=document.querySelector("#maintenanceFormPanel");
+  panel.hidden=false;f.elements.vehicle.value=item.vehicle;f.elements.type.value=item.type;
+  f.elements.notes.value=item.notes||"";f.elements.date.value=item.date||"";
+  f.elements.km.value=item.km??"";f.elements.value.value=item.value??"";
+  f.elements.workshop.value=item.workshop||"";
+  document.querySelector("#maintenanceFormPanel .panel-head h2").textContent="Editar manutenção";
+  f.querySelector('button[type="submit"]').innerHTML='Salvar alterações <span>→</span>';
+  panel.scrollIntoView({behavior:"smooth",block:"start"});return;
+ }
  const btn=e.target.closest("[data-maintenance-id]");if(!btn)return;
  if(!confirm("Deseja remover este registro de manutenção?"))return;
  maintenances=maintenances.filter(m=>m.id!==btn.dataset.maintenanceId);saveSharedState();renderMaintenance();
