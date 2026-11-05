@@ -560,9 +560,11 @@ function openModal(tripIndex = null) {
   });
   const fundingLabel = tripForm.elements.funding?.closest("label");
   const driverLabel = tripForm.elements.driver?.closest("label");
+  const driverHelpCostLabel = tripForm.elements.driverHelpCost?.closest("label");
+  const driverHelpTypeLabel = tripForm.elements.driverHelpType?.closest("label");
   const vehicleLabel = tripForm.elements.vehicle?.closest("label");
   const fuelLabel = tripForm.elements.fuelCost?.closest("label");
-  [fundingLabel, driverLabel, vehicleLabel, fuelLabel].forEach(label => { if (label) label.hidden = isEditor; });
+  [fundingLabel, driverLabel, driverHelpCostLabel, driverHelpTypeLabel, vehicleLabel, fuelLabel].forEach(label => { if (label) label.hidden = isEditor; });
   const fuelSection = fuelLabel?.closest(".trip-form-section");
   if (fuelSection) fuelSection.hidden = isEditor;
   const transportSection = driverLabel?.closest(".trip-form-section");
